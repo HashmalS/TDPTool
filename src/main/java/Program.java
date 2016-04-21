@@ -5,6 +5,7 @@ import java.io.IOException;
  * @author Sergey Soroka
  */
 public class Program {
+
     public static void main(String[] args) {
         DefReader reader = new DefReader("src\\main\\resources\\TestFiles\\simple.def");
         try {

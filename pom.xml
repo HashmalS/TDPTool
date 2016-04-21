@@ -7,6 +7,13 @@
     <groupId>com.miet.pkims.tdptool</groupId>
     <artifactId>tdp-tool</artifactId>
     <version>0.1</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.5</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
