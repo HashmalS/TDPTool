@@ -12,6 +12,8 @@ class DefReader {
     private ArrayList<Component> components = new ArrayList<>();
     private ArrayList<Pin> pins = new ArrayList<>();
     private ArrayList<Net> nets = new ArrayList<>();
+    private ArrayList<Row> rows = new ArrayList<>();
+    private Design design;
 
     DefReader(String name) {
         filename = name;
@@ -34,11 +36,37 @@ class DefReader {
             if (line.length() > 0 && !(line.charAt(0) == '#')) {
                 String[] splitStr = line.split(delims);
 
+                if (line.startsWith("DESIGN")) {
+                    design = new Design(splitStr[1]);
+                }
+
+                if (line.startsWith("UNITS")) {
+                    design.setDbuPerMicron(Integer.parseInt(splitStr[3]));
+                }
+
+                if (line.startsWith("DIEAREA")) {
+                    int[] point1 = {Integer.parseInt(splitStr[1]), Integer.parseInt(splitStr[2])};
+                    int[] point2 = {Integer.parseInt(splitStr[3]), Integer.parseInt(splitStr[4])};
+                    design.setDieArea1(point1);
+                    design.setDieArea2(point2);
+                    design.calculateSize();
+                }
+
+                if (line.startsWith("ROW")) {
+                    do {
+                        design.rows.add(new Row(splitStr[1], splitStr[2], Integer.parseInt(splitStr[3]),
+                                Integer.parseInt(splitStr[4]), splitStr[5].charAt(0), Integer.parseInt(splitStr[7]),
+                                Integer.parseInt(splitStr[9]), Integer.parseInt(splitStr[11]),
+                                Integer.parseInt(splitStr[12])));
+                        splitStr = br.readLine().split(delims);
+                    } while (splitStr[0].equals("ROW"));
+                }
+
                 if (line.startsWith("COMPONENTS")) {
                     for (int i = 0; i < Integer.parseInt(splitStr[1]); i++) {
                         splitStr1 = br.readLine().split(delims);
                         splitStr2 = br.readLine().split(delims);
-                        components.add(new Component(splitStr1[1], splitStr1[2], splitStr2[1],
+                        design.components.add(new Component(splitStr1[1], splitStr1[2], splitStr2[1],
                                 Integer.parseInt(splitStr2[2]), Integer.parseInt(splitStr2[3]),
                                 splitStr2[4].charAt(0)));
                     }
@@ -50,7 +78,7 @@ class DefReader {
                         splitStr2 = br.readLine().split(delims);
                         splitStr3 = br.readLine().split(delims);
                         splitStr4 = br.readLine().split(delims);
-                        pins.add(new Pin(splitStr1[1], splitStr1[3], splitStr2[2], splitStr3[1],
+                        design.pins.add(new Pin(splitStr1[1], splitStr1[3], splitStr2[2], splitStr3[1],
                                 Integer.parseInt(splitStr3[2]), Integer.parseInt(splitStr3[3]),
                                 splitStr3[4].charAt(0), splitStr4[2],
                                 Integer.parseInt(splitStr4[3]), Integer.parseInt(splitStr4[4]),
@@ -65,7 +93,7 @@ class DefReader {
                         for (int j = 2; j < splitStr1.length - 1; j++) {
                             connectionsMap.put(splitStr1[j++], splitStr1[j]);
                         }
-                        nets.add(new Net(splitStr1[0], connectionsMap));
+                        design.nets.add(new Net(splitStr1[0], connectionsMap));
                     }
                 }
             }
@@ -75,9 +103,9 @@ class DefReader {
         double resultTime = ((double)endTime - (double)startTime) / 1000;
         System.out.println("\n\nTime consumed on reading from file: " + resultTime + " s.");
 
-        System.out.println("Number of components created: " + components.size());
-        System.out.println("Number of pins created: " + pins.size());
-        System.out.println("Number of nets created: " + nets.size());
+
+        System.out.println("Found design \"" + design.getDesignName() + "\"\n\nDesign info:");
+        design.showDesignInfo();
 
         br.close();
     }

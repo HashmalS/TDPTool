@@ -7,7 +7,7 @@ import java.io.IOException;
 public class Program {
 
     public static void main(String[] args) {
-        DefReader reader = new DefReader("src\\main\\resources\\TestFiles\\b19.def");
+        DefReader reader = new DefReader("src\\main\\resources\\TestFiles\\simple.def");
         try {
             reader.readFile();
         } catch (IOException ex) {

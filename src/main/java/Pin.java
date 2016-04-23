@@ -19,7 +19,7 @@ class Pin {
     Pin(String name, String net, String direct, String type, int ptX, int ptY,
         char o, String layer, int pt1X, int pt1Y, int pt2X, int pt2Y) {
         pinName = name;
-        netName = name;
+        netName = net;
         direction = direct;
         this.type = type;
         pointX = ptX;
