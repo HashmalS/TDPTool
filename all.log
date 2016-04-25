@@ -1,0 +1,8 @@
+2016-04-25 12:27:31.726 [main] TRACE Program - Entering application.
+2016-04-25 12:27:31.730 [main] INFO  Program - Started parsing file.
+2016-04-25 12:27:31.730 [main] INFO  Program - Found design.
+2016-04-25 12:27:31.762 [main] INFO  Program - Parsing components.
+2016-04-25 12:27:33.359 [main] INFO  Program - Parsing pins.
+2016-04-25 12:27:33.360 [main] INFO  Program - Parsing nets.
+2016-04-25 12:27:34.314 [main] INFO  Program - Finished reading from file.
+2016-04-25 12:27:34.315 [main] TRACE Program - Exiting application.

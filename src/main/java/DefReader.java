@@ -1,3 +1,6 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +18,8 @@ class DefReader {
     private ArrayList<Row> rows = new ArrayList<>();
     private Design design;
 
+    private static final Logger logger = LogManager.getLogger(Program.class.getName());
+
     DefReader(String name) {
         filename = name;
     }
@@ -28,6 +33,8 @@ class DefReader {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 
+        logger.info("Started parsing file.");
+
         String line;
 
         long startTime = System.currentTimeMillis();
@@ -37,6 +44,7 @@ class DefReader {
                 String[] splitStr = line.split(delims);
 
                 if (line.startsWith("DESIGN")) {
+                    logger.info("Found design.");
                     design = new Design(splitStr[1]);
                 }
 
@@ -63,6 +71,7 @@ class DefReader {
                 }
 
                 if (line.startsWith("COMPONENTS")) {
+                    logger.info("Parsing components.");
                     for (int i = 0; i < Integer.parseInt(splitStr[1]); i++) {
                         splitStr1 = br.readLine().split(delims);
                         splitStr2 = br.readLine().split(delims);
@@ -73,6 +82,7 @@ class DefReader {
                 }
 
                if (line.startsWith("PINS")) {
+                   logger.info("Parsing pins.");
                     for (int i = 0; i < Integer.parseInt(splitStr[1]); i++) {
                         splitStr1 = br.readLine().split(delims);
                         splitStr2 = br.readLine().split(delims);
@@ -87,6 +97,7 @@ class DefReader {
                 }
 
                 if(line.startsWith("NETS")) {
+                    logger.info("Parsing nets.");
                     Map<String, String> connectionsMap = new HashMap<>();
                     for (int i = 0; i < Integer.parseInt(splitStr[1]); i++) {
                         splitStr1 = br.readLine().split(delims);
@@ -101,6 +112,8 @@ class DefReader {
 
         long endTime = System.currentTimeMillis();
         double resultTime = ((double)endTime - (double)startTime) / 1000;
+        logger.info("Finished reading from file.");
+
         System.out.println("\n\nTime consumed on reading from file: " + resultTime + " s.");
 
 

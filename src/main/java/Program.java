@@ -1,3 +1,6 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 
 /**
@@ -5,13 +8,19 @@ import java.io.IOException;
  * @author Sergey Soroka
  */
 public class Program {
+    // Configuring Log4j
+    private static final Logger logger = LogManager.getLogger(Program.class);
 
     public static void main(String[] args) {
-        DefReader reader = new DefReader("src\\main\\resources\\TestFiles\\simple.def");
+        logger.trace("Entering application.");
+
+        DefReader reader = new DefReader("src\\main\\resources\\TestFiles\\b19.def");
         try {
             reader.readFile();
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
+            logger.error(ex);
         }
+
+        logger.trace("Exiting application.");
     }
 }
