@@ -14,9 +14,11 @@ public class Program {
     public static void main(String[] args) {
         logger.trace("Entering application.");
 
-        DefReader reader = new DefReader("src\\main\\resources\\TestFiles\\b19.def");
+        FileReader reader = new FileReader("src\\main\\resources\\TestFiles\\b19\\b19.def",
+                "src\\main\\resources\\TestFiles\\b19\\techlib.lef");
         try {
             reader.readFile();
+            reader.readComponentPins();
         } catch (IOException ex) {
             logger.error(ex);
         }

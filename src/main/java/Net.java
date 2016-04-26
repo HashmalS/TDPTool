@@ -8,6 +8,7 @@ import java.util.Map;
 class Net {
     private String netName;
     private Map<String, String> connections = new HashMap<>();
+    public int weight;
 
     Net(String name, Map<String, String> cons) {
         netName = name;
