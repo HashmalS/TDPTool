@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created on 23.04.2016.
@@ -14,8 +15,8 @@ class Design {
     private int width;
 
     ArrayList<Row> rows = new ArrayList<>();
-    ArrayList<Component> components = new ArrayList<>();
-    ArrayList<Pin> pins = new ArrayList<>();
+    List<Component> components = new ArrayList<>();
+    ArrayList<GlobalPin> globalPins = new ArrayList<>();
     ArrayList<Net> nets = new ArrayList<>();
 
     Design(String name) {
@@ -56,7 +57,7 @@ class Design {
         System.out.println("Size: " + length + "x" + width);
         System.out.println("Rows: " + rows.size());
         System.out.println("Components: " + components.size());
-        System.out.println("Pins: " + pins.size());
+        System.out.println("Pins: " + globalPins.size());
         System.out.println("Nets: " + nets.size());
     }
 }

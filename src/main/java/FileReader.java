@@ -2,9 +2,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by HashmalS on 15.04.2016.
@@ -14,9 +12,11 @@ class FileReader {
     private String defName;
     private String lefName;
     private Design design;
+    private Pin connectedPin = null;
 
     private final String delims = "[\t( );+-]+";
     private long startTime, endTime;
+    private Comparator<Component> componentComparator = (o1, o2) ->  o1.compName.compareTo(o2.compName);
 
     private static final Logger logger = LogManager.getLogger(Program.class.getName());
 
@@ -25,7 +25,7 @@ class FileReader {
         lefName = lefFile;
     }
 
-    void readComponentPins() throws IOException {
+    private void readComponentPins() throws IOException {
         File lefFile = new File(lefName);
         FileInputStream lefInputStream = new FileInputStream(lefFile);
 
@@ -47,7 +47,7 @@ class FileReader {
                         if (splitStr.length > 1 && splitStr[1].equals("PIN")) {
                             for (Component comp: design.components) {
                                 if (comp.modelName.equals(model)) {
-                                    comp.pins.add(new ComponentPin(splitStr[2], splitStr[4]));
+                                    comp.pins.add(new ComponentPin(splitStr[2], splitStr[4], comp));
                                 }
                             }
                         }
@@ -119,34 +119,56 @@ class FileReader {
                                 Integer.parseInt(splitStr2[2]), Integer.parseInt(splitStr2[3]),
                                 splitStr2[4].charAt(0)));
                     }
+                    Collections.sort(design.components, componentComparator);
                     logger.info("Success.");
+                    readComponentPins();
                 }
 
-               if (line.startsWith("PINS")) {
-                   logger.info("Parsing pins.");
-                   for (int i = 0; i < Integer.parseInt(splitStr[1]); i++) {
-                       splitStr1 = defBufferedReader.readLine().split(delims);
-                       splitStr2 = defBufferedReader.readLine().split(delims);
-                       splitStr3 = defBufferedReader.readLine().split(delims);
-                       splitStr4 = defBufferedReader.readLine().split(delims);
-                       design.pins.add(new Pin(splitStr1[1], splitStr1[3], splitStr2[2], splitStr3[1],
+                    if (line.startsWith("PINS")) {
+                    logger.info("Parsing globalPins.");
+                    for (int i = 0; i < Integer.parseInt(splitStr[1]); i++) {
+                        splitStr1 = defBufferedReader.readLine().split(delims);
+                        splitStr2 = defBufferedReader.readLine().split(delims);
+                        splitStr3 = defBufferedReader.readLine().split(delims);
+                        splitStr4 = defBufferedReader.readLine().split(delims);
+                        design.globalPins.add(new GlobalPin(splitStr1[1], splitStr1[3], splitStr2[2], splitStr3[1],
                                Integer.parseInt(splitStr3[2]), Integer.parseInt(splitStr3[3]),
                                splitStr3[4].charAt(0), splitStr4[2],
                                Integer.parseInt(splitStr4[3]), Integer.parseInt(splitStr4[4]),
                                Integer.parseInt(splitStr4[5]), Integer.parseInt(splitStr4[6])));
-                   }
-                   logger.info("Success.");
+                    }
+                    logger.info("Success.");
                 }
 
                 if(line.startsWith("NETS")) {
                     logger.info("Parsing nets.");
-                    Map<String, String> connectionsMap = new HashMap<>();
+                    ArrayList<Pin> connections = new ArrayList<>();
+                    connections.clear();
                     for (int i = 0; i < Integer.parseInt(splitStr[1]); i++) {
                         splitStr1 = defBufferedReader.readLine().split(delims);
-                        for (int j = 2; j < splitStr1.length - 1; j++) {
-                            connectionsMap.put(splitStr1[j++], splitStr1[j]);
+                        connections = new ArrayList<>();
+                        for (int j = 2; j < splitStr1.length - 1; j+=2) {
+                            if (splitStr1[j].equals("PIN")) {
+                                for (GlobalPin pin:
+                                        design.globalPins) {
+                                    if (pin.pinName.equals(splitStr1[j+1])) {
+                                        connectedPin = pin;
+                                    }
+                                }
+                            }
+                            else {
+                                int index = Collections.binarySearch(design.components, new Component(splitStr1[j]),
+                                        componentComparator);
+                                for (ComponentPin pin:
+                                        design.components.get(index).pins) {
+                                    if (pin.pinName.equals(splitStr1[j+1])) {
+                                        connectedPin = pin;
+                                    }
+                                }
+                            }
+                            connections.add(connectedPin);
                         }
-                        design.nets.add(new Net(splitStr1[0], connectionsMap));
+                        design.nets.add(new Net(splitStr1[1], connections));
                     }
                     logger.info("Success.");
                 }
@@ -157,7 +179,7 @@ class FileReader {
         double resultTime = ((double)endTime - (double)startTime) / 1000;
         logger.info("Finished reading from DEF file.");
 
-        System.out.println("\n\nTime consumed on reading from DEF file: " + resultTime + " s.");
+        System.out.println("\n\nTime consumed on reading from files: " + resultTime + " s.");
 
 
         System.out.println("Found design \"" + design.getDesignName() + "\"\n\nDesign info:");

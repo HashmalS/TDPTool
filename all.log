@@ -1,15 +1,15 @@
-2016-04-26 19:12:16.725 [main] TRACE Program - Entering application.
-2016-04-26 19:12:16.729 [main] INFO  Program - Started parsing DEF file.
-2016-04-26 19:12:16.729 [main] INFO  Program - Found design.
-2016-04-26 19:12:16.730 [main] INFO  Program - Parsing rows.
-2016-04-26 19:12:16.781 [main] INFO  Program - Success.
-2016-04-26 19:12:16.781 [main] INFO  Program - Parsing components.
-2016-04-26 19:12:18.737 [main] INFO  Program - Success.
-2016-04-26 19:12:18.738 [main] INFO  Program - Parsing pins.
-2016-04-26 19:12:18.740 [main] INFO  Program - Success.
-2016-04-26 19:12:18.740 [main] INFO  Program - Parsing nets.
-2016-04-26 19:12:20.133 [main] INFO  Program - Success.
-2016-04-26 19:12:20.134 [main] INFO  Program - Finished reading from DEF file.
-2016-04-26 19:12:20.135 [main] INFO  Program - Started parsing LEF file
-2016-04-26 19:12:21.290 [main] INFO  Program - Finished parsing LEF file.
-2016-04-26 19:12:21.290 [main] TRACE Program - Exiting application.
+2016-05-02 14:24:48.873 [main] TRACE Program - Entering application.
+2016-05-02 14:24:49.172 [main] INFO  Program - Started parsing DEF file.
+2016-05-02 14:24:49.173 [main] INFO  Program - Found design.
+2016-05-02 14:24:49.183 [main] INFO  Program - Parsing rows.
+2016-05-02 14:24:49.253 [main] INFO  Program - Success.
+2016-05-02 14:24:49.253 [main] INFO  Program - Parsing components.
+2016-05-02 14:24:51.325 [main] INFO  Program - Success.
+2016-05-02 14:24:51.342 [main] INFO  Program - Started parsing LEF file
+2016-05-02 14:24:53.053 [main] INFO  Program - Finished parsing LEF file.
+2016-05-02 14:24:53.053 [main] INFO  Program - Parsing globalPins.
+2016-05-02 14:24:53.054 [main] INFO  Program - Success.
+2016-05-02 14:24:53.054 [main] INFO  Program - Parsing nets.
+2016-05-02 14:24:57.023 [main] INFO  Program - Success.
+2016-05-02 14:24:57.023 [main] INFO  Program - Finished reading from DEF file.
+2016-05-02 14:24:57.024 [main] TRACE Program - Exiting application.

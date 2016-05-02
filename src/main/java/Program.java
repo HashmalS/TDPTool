@@ -14,11 +14,10 @@ public class Program {
     public static void main(String[] args) {
         logger.trace("Entering application.");
 
-        FileReader reader = new FileReader("src\\main\\resources\\TestFiles\\b19\\b19.def",
-                "src\\main\\resources\\TestFiles\\b19\\techlib.lef");
+        FileReader reader = new FileReader("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\b19\\b19.def",
+                "C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\b19\\techlib.lef");
         try {
             reader.readFile();
-            reader.readComponentPins();
         } catch (IOException ex) {
             logger.error(ex);
         }
