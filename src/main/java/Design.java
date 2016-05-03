@@ -60,4 +60,30 @@ class Design {
         System.out.println("Pins: " + globalPins.size());
         System.out.println("Nets: " + nets.size());
     }
+
+    void calculateNetWeights() {
+        for (Net net :
+                nets) {
+            int xMin = dieArea2[0];
+            int yMin = dieArea2[1];
+            int xMax = dieArea1[0];
+            int yMax = dieArea1[1];
+            for (Pin pin :
+                    net.connections) {
+                if (pin.pointX > xMax) {
+                    xMax = pin.pointX;
+                }
+                if (pin.pointX < xMin) {
+                    xMin = pin.pointX;
+                }
+                if (pin.pointY > yMax) {
+                    yMax = pin.pointY;
+                }
+                if (pin.pointY < yMin) {
+                    yMin = pin.pointY;
+                }
+            }
+            net.weight = (xMax - xMin) + (yMax - yMin);
+        }
+    }
 }

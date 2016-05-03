@@ -16,6 +16,7 @@ class FileReader {
 
     private final String delims = "[\t( );+-]+";
     private long startTime, endTime;
+    private double resultTime;
     private Comparator<Component> componentComparator = (o1, o2) ->  o1.compName.compareTo(o2.compName);
 
     private static final Logger logger = LogManager.getLogger(Program.class.getName());
@@ -58,7 +59,7 @@ class FileReader {
 
         endTime = System.currentTimeMillis();
         double resultTime = ((double)endTime - (double)startTime) / 1000;
-        System.out.println("\n\nTime consumed on reading from LEF file: " + resultTime + " s.");
+        logger.info("Time consumed on reading from LEF file: " + resultTime + " s.");
 
         logger.info("Finished parsing LEF file.");
     }
@@ -176,14 +177,23 @@ class FileReader {
         }
 
         endTime = System.currentTimeMillis();
-        double resultTime = ((double)endTime - (double)startTime) / 1000;
+        resultTime = ((double)endTime - (double)startTime) / 1000;
         logger.info("Finished reading from DEF file.");
-
-        System.out.println("\n\nTime consumed on reading from files: " + resultTime + " s.");
-
+        logger.info("Time consumed on reading from files: " + resultTime + " s.");
 
         System.out.println("Found design \"" + design.getDesignName() + "\"\n\nDesign info:");
         design.showDesignInfo();
+
+        logger.info("Started netweighting.");
+
+        startTime = System.currentTimeMillis();
+        design.calculateNetWeights();
+        endTime = System.currentTimeMillis();
+        resultTime = ((double)endTime - (double)startTime) / 1000;
+
+        logger.info("Finished netweighting.");
+        logger.info("Time consumed on netweigting: " + resultTime + " s.");
+
 
         defBufferedReader.close();
     }

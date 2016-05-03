@@ -14,8 +14,8 @@ public class Program {
     public static void main(String[] args) {
         logger.trace("Entering application.");
 
-        FileReader reader = new FileReader("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\b19\\b19.def",
-                "C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\b19\\techlib.lef");
+        FileReader reader = new FileReader("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\netcard\\netcard.def",
+                "C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\netcard\\techlib.lef");
         try {
             reader.readFile();
         } catch (IOException ex) {

@@ -8,8 +8,8 @@ import java.util.Map;
  */
 class Net {
     private String netName;
-    private ArrayList<Pin> connections;
-    public int weight;
+    ArrayList<Pin> connections;
+    int weight;
 
     Net(String name, ArrayList<Pin> cons) {
         netName = name;
