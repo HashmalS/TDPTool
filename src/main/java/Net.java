@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created on 22.04.2016.
