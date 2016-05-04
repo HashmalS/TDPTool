@@ -64,7 +64,7 @@ class FileReader {
         logger.info("Finished parsing LEF file.");
     }
 
-    void readFile() throws IOException {
+    Design readDesign() throws IOException {
         String[] splitStr1, splitStr2, splitStr3, splitStr4;
 
         File defFile = new File(defName);
@@ -126,7 +126,7 @@ class FileReader {
                 }
 
                     if (line.startsWith("PINS")) {
-                    logger.info("Parsing globalPins.");
+                    logger.info("Parsing global pins.");
                     for (int i = 0; i < Integer.parseInt(splitStr[1]); i++) {
                         splitStr1 = defBufferedReader.readLine().split(delims);
                         splitStr2 = defBufferedReader.readLine().split(delims);
@@ -183,18 +183,7 @@ class FileReader {
 
         System.out.println("Found design \"" + design.getDesignName() + "\"\n\nDesign info:");
         design.showDesignInfo();
-
-        logger.info("Started netweighting.");
-
-        startTime = System.currentTimeMillis();
-        design.calculateNetWeights();
-        endTime = System.currentTimeMillis();
-        resultTime = ((double)endTime - (double)startTime) / 1000;
-
-        logger.info("Finished netweighting.");
-        logger.info("Time consumed on netweigting: " + resultTime + " s.");
-
-
         defBufferedReader.close();
+        return design;
     }
 }

@@ -11,16 +11,30 @@ public class Program {
     // Configuring Log4j
     private static final Logger logger = LogManager.getLogger(Program.class);
 
+    private static Design design;
+
     public static void main(String[] args) {
         logger.trace("Entering application.");
 
         FileReader reader = new FileReader("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\netcard\\netcard.def",
                 "C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\netcard\\techlib.lef");
         try {
-            reader.readFile();
+            design = reader.readDesign();
         } catch (IOException ex) {
             logger.error(ex);
         }
+
+
+        logger.info("Started calculating wire length.");
+
+        long startTime = System.currentTimeMillis();
+        design.calculateWireLength();
+        long endTime = System.currentTimeMillis();
+        double resultTime = ((double)endTime - (double)startTime) / 1000;
+
+        logger.info("Finished calculating wire length.");
+        logger.info("Time consumed on calculating wire length: " + resultTime + " s.");
+        design.calculateWireLength();
 
         logger.trace("Exiting application.");
     }

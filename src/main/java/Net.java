@@ -9,17 +9,10 @@ import java.util.Map;
 class Net {
     private String netName;
     ArrayList<Pin> connections;
-    int weight;
+    int length;
 
     Net(String name, ArrayList<Pin> cons) {
         netName = name;
         connections = cons;
-    }
-
-    void showConnections() {
-        for (Pin pin: connections) {
-                System.out.print(pin.pinName + ", ");
-            }
-        System.out.println();
     }
 }

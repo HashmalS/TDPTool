@@ -61,7 +61,7 @@ class Design {
         System.out.println("Nets: " + nets.size());
     }
 
-    void calculateNetWeights() {
+    void calculateWireLength() {
         for (Net net :
                 nets) {
             int xMin = dieArea2[0];
@@ -83,7 +83,7 @@ class Design {
                     yMin = pin.pointY;
                 }
             }
-            net.weight = (xMax - xMin) + (yMax - yMin);
+            net.length = (xMax - xMin) + (yMax - yMin);
         }
     }
 }
