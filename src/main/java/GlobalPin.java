@@ -28,14 +28,16 @@ class GlobalPin extends Pin {
         layerPt1Y = pt1Y;
         layerPt2X = pt2X;
         layerPt2Y = pt2Y;
+        attachment = "PIN";
     }
 
     @Override
     public String toString() {
-        return "   - " + pinName + " + NET " + netName + "\n" +
-                "      + DIRECTION " + direction + "\n" +
-                "      + " + type + " ( " + pointX + " " + pointY + " ) " + orient + "\n" +
-                "\t\t\t+ LAYER " + layerName + " ( " + layerPt1X + " " + layerPt1Y +
-                " ) ( " + layerPt2X + " " + layerPt2Y + " ) ;";
+        return new StringBuilder().append("   - ").append(pinName).append(" + NET ").append(netName).append("\n")
+                .append("      + DIRECTION ").append(direction).append("\n").append("      + ").append(type)
+                .append(" ( ").append(pointX).append(" ").append(pointY).append(" ) ").append(orient).append("\n")
+                .append("      + LAYER ").append(layerName).append(" ( ").append(layerPt1X).append(" ")
+                .append(layerPt1Y).append(" ) ( ").append(layerPt2X).append(" ").append(layerPt2Y).append(" ) ;\n")
+                .toString();
     }
 }

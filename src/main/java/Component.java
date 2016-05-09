@@ -28,6 +28,8 @@ class Component {
 
     @Override
     public String toString() {
-        return compName + " " + modelName + " " + type + " (" + pointX + ", " + pointY + ") " + orient;
+        return new StringBuilder().append("   - ").append(compName).append(" ").append(modelName).append("\n")
+                .append("      + ").append(type).append(" ( ").append(pointX).append(" ").append(pointY).append(" ) ")
+                .append(orient).append(" ;\n").toString();
     }
 }

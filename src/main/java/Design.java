@@ -86,4 +86,11 @@ class Design {
             net.length = (xMax - xMin) + (yMax - yMin);
         }
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().append("DESIGN ").append(designName).append(" ;\n\nUNITS DISTANCE MICRONS ")
+                .append(dbuPerMicron).append(" ;\nDIEAREA ( ").append(dieArea1[0]).append(" ").append(dieArea1[1])
+                .append(" )  ( ").append(dieArea2[0]).append(" ").append(dieArea2[1]).append(" ) ;\n\n").toString();
+    }
 }

@@ -7,6 +7,7 @@ abstract class Pin {
     String direction;
     int pointX;
     int pointY;
+    String attachment;
 
     Pin() {}
 }

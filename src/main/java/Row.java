@@ -27,7 +27,9 @@ class Row {
 
     @Override
     public String toString() {
-        return "ROW " + rowName + " " + siteName + " " + origX + " " + origY + " " + siteOrient +
-                " DO " + numX + " BY " + numY + " STEP " + stepX + stepY + " ;";
+        return new StringBuilder().append("ROW ").append(rowName).append(" ").append(siteName).append(" ")
+                .append(origX).append(" ").append(origY).append(" ").append(siteOrient).append(" DO ").append(numX)
+                .append(" BY ").append(numY).append(" STEP ").append(stepX).append(" ").append(stepY).append(" ;\n")
+                .toString();
     }
 }

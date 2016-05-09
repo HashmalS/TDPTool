@@ -13,5 +13,6 @@ class ComponentPin extends Pin {
         pointX = component.pointX;
         pointY = component.pointY;
         this.component = component;
+        attachment = component.compName;
     }
 }
