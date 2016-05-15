@@ -1,22 +1,22 @@
-2016-05-09 16:10:33.244 [main] TRACE Program - Entering application.
-2016-05-09 16:10:33.476 [main] INFO  Program - Started parsing DEF file.
-2016-05-09 16:10:33.477 [main] INFO  Program - Found design.
-2016-05-09 16:10:33.478 [main] INFO  Program - Parsing rows.
-2016-05-09 16:10:33.528 [main] INFO  Program - Success.
-2016-05-09 16:10:33.529 [main] INFO  Program - Parsing components.
-2016-05-09 16:10:34.658 [main] INFO  Program - Success.
-2016-05-09 16:10:34.703 [main] INFO  Program - Started parsing LEF file
-2016-05-09 16:10:35.398 [main] INFO  Program - Time consumed on reading from LEF file: 0.694 s.
-2016-05-09 16:10:35.398 [main] INFO  Program - Finished parsing LEF file.
-2016-05-09 16:10:35.398 [main] INFO  Program - Parsing global pins.
-2016-05-09 16:10:35.432 [main] INFO  Program - Success.
-2016-05-09 16:10:35.432 [main] INFO  Program - Parsing nets.
-2016-05-09 16:10:38.055 [main] INFO  Program - Success.
-2016-05-09 16:10:38.055 [main] INFO  Program - Finished reading from DEF file.
-2016-05-09 16:10:38.055 [main] INFO  Program - Time consumed on reading from files: 3.352 s.
-2016-05-09 16:10:38.056 [main] INFO  Program - Started calculating wire length.
-2016-05-09 16:10:38.109 [main] INFO  Program - Finished calculating wire length.
-2016-05-09 16:10:38.110 [main] INFO  Program - Time consumed on calculating wire length: 0.053 s.
-2016-05-09 16:10:38.159 [main] TRACE Program - Started writing a file.
-2016-05-09 16:10:44.485 [main] TRACE Program - Finished writing.
-2016-05-09 16:10:44.485 [main] TRACE Program - Exiting application.
+2016-05-15 16:36:41.663 [main] TRACE Program - Entering application.
+2016-05-15 16:36:41.896 [main] INFO  Program - Started parsing DEF file.
+2016-05-15 16:36:41.897 [main] INFO  Program - Found design.
+2016-05-15 16:36:41.898 [main] INFO  Program - Parsing rows.
+2016-05-15 16:36:41.938 [main] INFO  Program - Success.
+2016-05-15 16:36:41.938 [main] INFO  Program - Parsing components.
+2016-05-15 16:36:42.581 [main] INFO  Program - Success.
+2016-05-15 16:36:42.639 [main] INFO  Program - Started parsing LEF file
+2016-05-15 16:36:43.197 [main] INFO  Program - Time consumed on reading from LEF file: 0.558 s.
+2016-05-15 16:36:43.198 [main] INFO  Program - Finished parsing LEF file.
+2016-05-15 16:36:43.198 [main] INFO  Program - Parsing global pins.
+2016-05-15 16:36:43.236 [main] INFO  Program - Success.
+2016-05-15 16:36:43.236 [main] INFO  Program - Parsing nets.
+2016-05-15 16:36:44.485 [main] INFO  Program - Success.
+2016-05-15 16:36:44.485 [main] INFO  Program - Finished reading from DEF file.
+2016-05-15 16:36:44.485 [main] INFO  Program - Time consumed on reading from files: 1.846 s.
+2016-05-15 16:36:44.486 [main] INFO  Program - Started calculating wire length.
+2016-05-15 16:36:44.538 [main] INFO  Program - Finished calculating wire length.
+2016-05-15 16:36:44.576 [main] INFO  Program - Time consumed on calculating wire length: 0.052 s.
+2016-05-15 16:36:44.577 [main] TRACE Program - Started writing a file.
+2016-05-15 16:36:47.605 [main] TRACE Program - Finished writing.
+2016-05-15 16:36:47.605 [main] TRACE Program - Exiting application.

@@ -33,8 +33,10 @@ public class Program {
         double resultTime = ((double)endTime - (double)startTime) / 1000;
 
         logger.info("Finished calculating wire length.");
-        logger.info("Time consumed on calculating wire length: " + resultTime + " s.");
         design.calculateWireLength();
+        logger.info("Time consumed on calculating wire length: " + resultTime + " s.");
+
+        Placer placer = new Placer(design);
 
         logger.trace("Started writing a file.");
         FileWriter writer = new FileWriter("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\mgc_edit_dist");
