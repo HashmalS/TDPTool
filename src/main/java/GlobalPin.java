@@ -31,13 +31,11 @@ class GlobalPin extends Pin {
         attachment = "PIN";
     }
 
-    @Override
-    public String toString() {
-        return new StringBuilder().append("   - ").append(pinName).append(" + NET ").append(netName).append("\n")
-                .append("      + DIRECTION ").append(direction).append("\n").append("      + ").append(type)
-                .append(" ( ").append(pointX).append(" ").append(pointY).append(" ) ").append(orient).append("\n")
-                .append("      + LAYER ").append(layerName).append(" ( ").append(layerPt1X).append(" ")
-                .append(layerPt1Y).append(" ) ( ").append(layerPt2X).append(" ").append(layerPt2Y).append(" ) ;\n")
-                .toString();
+    String fileWritingString() {
+        return "   - " + pinName + " + NET " + netName + "\n" +
+                "      + DIRECTION " + direction + "\n" + "      + " + type +
+                " ( " + pointX + " " + pointY + " ) " + orient + "\n" +
+                "      + LAYER " + layerName + " ( " + layerPt1X + " " +
+                layerPt1Y + " ) ( " + layerPt2X + " " + layerPt2Y + " ) ;\n";
     }
 }

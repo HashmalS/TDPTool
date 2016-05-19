@@ -10,4 +10,9 @@ abstract class Pin {
     String attachment;
 
     Pin() {}
+
+    @Override
+    public String toString() {
+        return attachment + " " + pinName;
+    }
 }

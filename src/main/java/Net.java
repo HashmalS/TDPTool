@@ -19,9 +19,9 @@ class Net {
         String cons = "";
         for (Pin pin :
                 connections) {
-            cons += new StringBuilder().append(" ( ").append(pin.attachment).append(" ").append(pin.pinName)
-                    .append(" ) ").toString();
+            cons += " ( " + pin.attachment + " " + pin.pinName +
+                    " ) ";
         }
-        return new StringBuilder().append("   - ").append(netName).append(cons).append(" ; \n").toString();
+        return "   - " + netName + cons + " ; \n";
     }
 }

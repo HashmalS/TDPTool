@@ -16,7 +16,6 @@ class FileReader {
 
     private final String delims = "[\t( );+-]+";
     private long startTime, endTime;
-    private double resultTime;
     private Comparator<Component> componentComparator = (o1, o2) ->  o1.compName.compareTo(o2.compName);
 
     private static final Logger logger = LogManager.getLogger(Program.class.getName());
@@ -177,7 +176,7 @@ class FileReader {
         }
 
         endTime = System.currentTimeMillis();
-        resultTime = ((double)endTime - (double)startTime) / 1000;
+        double resultTime = ((double) endTime - (double) startTime) / 1000;
         logger.info("Finished reading from DEF file.");
         logger.info("Time consumed on reading from files: " + resultTime + " s.");
 

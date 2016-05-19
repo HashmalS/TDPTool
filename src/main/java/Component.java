@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Created on 21.04.2016.
@@ -12,6 +12,8 @@ class Component {
     int pointY;
     private char orient;
     ArrayList<ComponentPin> pins = new ArrayList<>();
+    List<Pin> inputPins;
+    List<Pin> outputPins;
 
     Component(String name) {
         compName = name;
@@ -24,12 +26,23 @@ class Component {
         pointX = x;
         pointY = y;
         this.orient = orient;
+        inputPins = new ArrayList<>();
+        outputPins = new ArrayList<>();
+    }
+    
+    void createPinSets() {
+        for (Pin p :
+                pins) {
+            if (Objects.equals(p.direction, "INPUT")) {
+                inputPins.add(p);
+            }
+            else outputPins.add(p);
+        }
     }
 
     @Override
     public String toString() {
-        return new StringBuilder().append("   - ").append(compName).append(" ").append(modelName).append("\n")
-                .append("      + ").append(type).append(" ( ").append(pointX).append(" ").append(pointY).append(" ) ")
-                .append(orient).append(" ;\n").toString();
+        return String.format("   - %s %s\n      + %s ( %d %d ) %s ;\n",
+                compName, modelName, type, pointX, pointY, orient);
     }
 }

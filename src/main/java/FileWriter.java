@@ -12,9 +12,10 @@ import java.nio.file.Paths;
  */
 class FileWriter {
     private final String header = "VERSION 5.7 ; \n" + "DIVIDERCHAR \"/\" ;\n";
-    private String fileName = "output.def";
+    private String fileName;
 
     FileWriter(String path) {
+        fileName = "output.def";
         fileName = path + "\\" + fileName;
     }
 
@@ -37,9 +38,9 @@ class FileWriter {
             writer.write("END COMPONENTS\n\n");
 
             writer.write("PINS " + design.globalPins.size() + " ; \n");
-            for (Pin pin :
+            for (GlobalPin pin :
                     design.globalPins) {
-                writer.write(pin.toString());
+                writer.write(pin.fileWritingString());
                 writer.flush();
             }
             writer.write("END PINS\n\n");

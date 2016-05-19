@@ -1,3 +1,7 @@
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,13 +18,20 @@ class Design {
     private int length;
     private int width;
 
-    ArrayList<Row> rows = new ArrayList<>();
-    List<Component> components = new ArrayList<>();
-    ArrayList<GlobalPin> globalPins = new ArrayList<>();
-    ArrayList<Net> nets = new ArrayList<>();
+    ArrayList<Row> rows;
+    List<Component> components;
+    ArrayList<GlobalPin> globalPins;
+    ArrayList<Net> nets;
+
+    private DirectedGraph<Pin, DefaultEdge> pinDirectedGraph;
 
     Design(String name) {
         designName = name;
+        rows = new ArrayList<>();
+        components = new ArrayList<>();
+        globalPins = new ArrayList<>();
+        nets = new ArrayList<>();
+        pinDirectedGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
     }
 
     Design(String name, int[] areaPoint1, int[] areaPoint2, int dbu) {
@@ -29,6 +40,10 @@ class Design {
         dieArea2 = areaPoint2;
         dbuPerMicron = dbu;
         calculateSize();
+        rows = new ArrayList<>();
+        components = new ArrayList<>();
+        globalPins = new ArrayList<>();
+        nets = new ArrayList<>();
     }
 
     String getDesignName() {
@@ -87,10 +102,39 @@ class Design {
         }
     }
 
+    void createPinDirectedGraph() {
+        DirectedGraph<Pin, DefaultEdge> pinGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        globalPins.forEach(pinGraph::addVertex);
+        for (Component comp :
+                components) {
+            comp.pins.forEach(pinGraph::addVertex);
+        }
+
+        for (Component comp :
+                components) {
+            comp.createPinSets();
+            for (Pin p :
+                    comp.inputPins) {
+                for (Pin p1 :
+                        comp.outputPins) {
+                    pinGraph.addEdge(p, p1);
+                }
+            }
+        }
+        for (Net net :
+                nets) {
+            Pin p1 = net.connections.get(0);
+            net.connections.subList(1, net.connections.size()).stream()
+                    .filter(p -> pinGraph.containsVertex(p) && pinGraph.containsVertex(p1))
+                    .forEach(p -> pinGraph.addEdge(p1, p));
+        }
+        this.pinDirectedGraph = pinGraph;
+    }
+
     @Override
     public String toString() {
-        return new StringBuilder().append("DESIGN ").append(designName).append(" ;\n\nUNITS DISTANCE MICRONS ")
-                .append(dbuPerMicron).append(" ;\nDIEAREA ( ").append(dieArea1[0]).append(" ").append(dieArea1[1])
-                .append(" )  ( ").append(dieArea2[0]).append(" ").append(dieArea2[1]).append(" ) ;\n\n").toString();
+        return "DESIGN " + designName + " ;\n\nUNITS DISTANCE MICRONS " +
+                dbuPerMicron + " ;\nDIEAREA ( " + dieArea1[0] + " " + dieArea1[1] +
+                " )  ( " + dieArea2[0] + " " + dieArea2[1] + " ) ;\n\n";
     }
 }
