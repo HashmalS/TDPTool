@@ -1,6 +1,5 @@
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.ListenableDirectedWeightedGraph;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ class Design {
     ArrayList<GlobalPin> globalPins;
     ArrayList<Net> nets;
 
-    private DirectedGraph<Pin, DefaultEdge> pinDirectedGraph;
+    private ListenableDirectedWeightedGraph<Pin, DefaultWeightedEdge> pinDirectedGraph;
 
     Design(String name) {
         designName = name;
@@ -31,7 +30,7 @@ class Design {
         components = new ArrayList<>();
         globalPins = new ArrayList<>();
         nets = new ArrayList<>();
-        pinDirectedGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        pinDirectedGraph = new ListenableDirectedWeightedGraph<>(DefaultWeightedEdge.class);
     }
 
     Design(String name, int[] areaPoint1, int[] areaPoint2, int dbu) {
@@ -103,7 +102,8 @@ class Design {
     }
 
     void createPinDirectedGraph() {
-        DirectedGraph<Pin, DefaultEdge> pinGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        ListenableDirectedWeightedGraph<Pin, DefaultWeightedEdge> pinGraph =
+                new ListenableDirectedWeightedGraph<>(DefaultWeightedEdge.class);
         globalPins.forEach(pinGraph::addVertex);
         for (Component comp :
                 components) {
@@ -128,7 +128,15 @@ class Design {
                     .filter(p -> pinGraph.containsVertex(p) && pinGraph.containsVertex(p1))
                     .forEach(p -> pinGraph.addEdge(p1, p));
         }
+
         this.pinDirectedGraph = pinGraph;
+    }
+
+    private void assignWeights() {
+        for (DefaultWeightedEdge edge :
+                pinDirectedGraph.edgeSet()) {
+            pinDirectedGraph.setEdgeWeight(edge, 3);
+        }
     }
 
     @Override

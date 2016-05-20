@@ -1,7 +1,5 @@
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,7 +9,6 @@ import java.nio.file.Paths;
  * @author Sergey Soroka
  */
 class FileWriter {
-    private final String header = "VERSION 5.7 ; \n" + "DIVIDERCHAR \"/\" ;\n";
     private String fileName;
 
     FileWriter(String path) {
@@ -22,6 +19,7 @@ class FileWriter {
     void writeDesign(Design design) throws IOException {
         Path path = Paths.get(fileName);
         try (BufferedWriter writer = Files.newBufferedWriter(path)){
+            String header = "VERSION 5.7 ; \n" + "DIVIDERCHAR \"/\" ;\n";
             writer.write(header);
             writer.write(design.toString());
             for (Row row :

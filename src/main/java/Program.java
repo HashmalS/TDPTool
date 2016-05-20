@@ -16,8 +16,8 @@ public class Program {
     public static void main(String[] args) {
         logger.trace("Entering application.");
 
-        FileReader reader = new FileReader("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\b19\\b19.def",
-                "C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\b19\\techlib.lef");
+        FileReader reader = new FileReader("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple\\simple.def",
+                "C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple\\techlib.lef");
         try {
             design = reader.readDesign();
         } catch (IOException ex) {
@@ -41,7 +41,7 @@ public class Program {
         logger.trace("Successfully created graph.");
 
         logger.trace("Started writing a file.");
-        FileWriter writer = new FileWriter("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\b19");
+        FileWriter writer = new FileWriter("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple");
         try {
             writer.writeDesign(design);
         }
