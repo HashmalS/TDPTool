@@ -125,8 +125,8 @@ class Design {
                     comp.inputPins) {
                 for (Pin p1 :
                         comp.outputPins) {
-                    pinGraph.addEdge(p1, p);
-                    pinGraph.setEdgeWeight(pinGraph.getEdge(p1, p), 1);
+                    pinGraph.addEdge(p, p1);
+                    pinGraph.setEdgeWeight(pinGraph.getEdge(p, p1), 1);
                 }
             }
         }
@@ -137,7 +137,7 @@ class Design {
                     .filter(p -> pinGraph.containsVertex(p) && pinGraph.containsVertex(p1))
                     .forEach(p -> {
                         pinGraph.addEdge(p1, p);
-                        pinGraph.setEdgeWeight(pinGraph.getEdge(p1, p), net.length);
+                        pinGraph.setEdgeWeight(pinGraph.getEdge(p1, p), 1);
                     });
         }
 
@@ -148,8 +148,14 @@ class Design {
         setPins();
         AllDirectedPaths<Pin, DefaultWeightedEdge> adp = new AllDirectedPaths<>(pinDirectedGraph);
         List<GraphPath<Pin, DefaultWeightedEdge>> paths;
-        paths = adp.getAllPaths(inputPins, outputPins, true, MAX_VALUE);
-        System.out.println(paths);
+        for (Pin ip :
+                inputPins) {
+            for (Pin op :
+                    outputPins) {
+                paths = adp.getAllPaths(ip, op, true, 1000);
+                System.out.println(paths);
+            }
+        }
     }
 
     private void setPins() {
