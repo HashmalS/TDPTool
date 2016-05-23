@@ -1,8 +1,13 @@
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.AllDirectedPaths;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableDirectedWeightedGraph;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+
+import static java.lang.Integer.*;
 
 /**
  * Created on 23.04.2016.
@@ -21,6 +26,9 @@ class Design {
     List<Component> components;
     ArrayList<GlobalPin> globalPins;
     ArrayList<Net> nets;
+
+    private HashSet<Pin> inputPins;
+    private HashSet<Pin> outputPins;
 
     private ListenableDirectedWeightedGraph<Pin, DefaultWeightedEdge> pinDirectedGraph;
 
@@ -117,7 +125,8 @@ class Design {
                     comp.inputPins) {
                 for (Pin p1 :
                         comp.outputPins) {
-                    pinGraph.addEdge(p, p1);
+                    pinGraph.addEdge(p1, p);
+                    pinGraph.setEdgeWeight(pinGraph.getEdge(p1, p), 1);
                 }
             }
         }
@@ -126,16 +135,34 @@ class Design {
             Pin p1 = net.connections.get(0);
             net.connections.subList(1, net.connections.size()).stream()
                     .filter(p -> pinGraph.containsVertex(p) && pinGraph.containsVertex(p1))
-                    .forEach(p -> pinGraph.addEdge(p1, p));
+                    .forEach(p -> {
+                        pinGraph.addEdge(p1, p);
+                        pinGraph.setEdgeWeight(pinGraph.getEdge(p1, p), net.length);
+                    });
         }
 
-        this.pinDirectedGraph = pinGraph;
+        pinDirectedGraph = pinGraph;
     }
 
-    private void assignWeights() {
-        for (DefaultWeightedEdge edge :
-                pinDirectedGraph.edgeSet()) {
-            pinDirectedGraph.setEdgeWeight(edge, 3);
+    void checkPaths() {
+        setPins();
+        AllDirectedPaths<Pin, DefaultWeightedEdge> adp = new AllDirectedPaths<>(pinDirectedGraph);
+        List<GraphPath<Pin, DefaultWeightedEdge>> paths;
+        paths = adp.getAllPaths(inputPins, outputPins, true, MAX_VALUE);
+        System.out.println(paths);
+    }
+
+    private void setPins() {
+        inputPins = new HashSet<>();
+        outputPins = new HashSet<>();
+        for (Pin p :
+                globalPins) {
+            if (p.direction.equals("INPUT")) {
+                inputPins.add(p);
+            }
+            else  {
+                outputPins.add(p);
+            }
         }
     }
 

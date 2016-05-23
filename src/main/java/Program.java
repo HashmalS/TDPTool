@@ -39,6 +39,7 @@ public class Program {
         logger.trace("Creating graph.");
         design.createPinDirectedGraph();
         logger.trace("Successfully created graph.");
+        design.checkPaths();
 
         logger.trace("Started writing a file.");
         FileWriter writer = new FileWriter("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple");
