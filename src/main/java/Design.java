@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static java.lang.Integer.*;
-
 /**
  * Created on 23.04.2016.
  * @author HashmalS
@@ -39,18 +37,6 @@ class Design {
         globalPins = new ArrayList<>();
         nets = new ArrayList<>();
         pinDirectedGraph = new ListenableDirectedWeightedGraph<>(DefaultWeightedEdge.class);
-    }
-
-    Design(String name, int[] areaPoint1, int[] areaPoint2, int dbu) {
-        designName = name;
-        dieArea1 = areaPoint1;
-        dieArea2 = areaPoint2;
-        dbuPerMicron = dbu;
-        calculateSize();
-        rows = new ArrayList<>();
-        components = new ArrayList<>();
-        globalPins = new ArrayList<>();
-        nets = new ArrayList<>();
     }
 
     String getDesignName() {
@@ -137,7 +123,7 @@ class Design {
                     .filter(p -> pinGraph.containsVertex(p) && pinGraph.containsVertex(p1))
                     .forEach(p -> {
                         pinGraph.addEdge(p1, p);
-                        pinGraph.setEdgeWeight(pinGraph.getEdge(p1, p), 1);
+                        pinGraph.setEdgeWeight(pinGraph.getEdge(p1, p), net.length);
                     });
         }
 
