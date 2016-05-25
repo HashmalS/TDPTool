@@ -40,6 +40,11 @@ class Component {
         }
     }
 
+    void moveTo(int x, int y) {
+        pointX = x;
+        pointY = y;
+    }
+
     @Override
     public String toString() {
         return String.format("   - %s %s\n      + %s ( %d %d ) %s ;\n",

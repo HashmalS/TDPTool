@@ -112,7 +112,6 @@ class Design {
                 for (Pin p1 :
                         comp.outputPins) {
                     pinGraph.addEdge(p, p1);
-                    pinGraph.setEdgeWeight(pinGraph.getEdge(p, p1), 1);
                 }
             }
         }
@@ -121,13 +120,31 @@ class Design {
             Pin p1 = net.connections.get(0);
             net.connections.subList(1, net.connections.size()).stream()
                     .filter(p -> pinGraph.containsVertex(p) && pinGraph.containsVertex(p1))
-                    .forEach(p -> {
-                        pinGraph.addEdge(p1, p);
-                        pinGraph.setEdgeWeight(pinGraph.getEdge(p1, p), net.length);
-                    });
+                    .forEach(p -> pinGraph.addEdge(p1, p));
         }
 
         pinDirectedGraph = pinGraph;
+    }
+
+    void updateEdgeLengths() {
+        for (Component comp :
+                components) {
+            comp.createPinSets();
+            for (Pin p :
+                    comp.inputPins) {
+                for (Pin p1 :
+                        comp.outputPins) {
+                    pinDirectedGraph.setEdgeWeight(pinDirectedGraph.getEdge(p, p1), 1);
+                }
+            }
+        }
+        for (Net net :
+                nets) {
+            Pin p1 = net.connections.get(0);
+            net.connections.subList(1, net.connections.size()).stream()
+                    .filter(p -> pinDirectedGraph.containsVertex(p) && pinDirectedGraph.containsVertex(p1))
+                    .forEach(p -> pinDirectedGraph.setEdgeWeight(pinDirectedGraph.getEdge(p1, p), net.length));
+        }
     }
 
     void checkPaths() {
@@ -136,10 +153,16 @@ class Design {
         List<GraphPath<Pin, DefaultWeightedEdge>> paths;
         for (Pin ip :
                 inputPins) {
+            System.out.println(ip.direction + " pin " + ip.attachment + " " + ip.pinName);
             for (Pin op :
                     outputPins) {
+                System.out.println(op.direction + " pin " + op.attachment + " " + op.pinName);
                 paths = adp.getAllPaths(ip, op, true, 1000);
-                System.out.println(paths);
+                for (GraphPath<Pin, DefaultWeightedEdge> path:
+                     paths) {
+                    System.out.println(path);
+                    System.out.println(path.getWeight() + "\n");
+                }
             }
         }
     }
