@@ -24,17 +24,15 @@ public class Program {
             logger.error(ex);
         }
 
-
         logger.trace("Started calculating wire length.");
-
         long startTime = System.currentTimeMillis();
         design.calculateWireLength();
         long endTime = System.currentTimeMillis();
         double resultTime = ((double)endTime - (double)startTime) / 1000;
-
         logger.trace("Finished calculating wire length.");
-        design.calculateWireLength();
         logger.info("Time consumed on calculating wire length: " + resultTime + " s.");
+
+        design.componentsToRows();
 
         logger.trace("Creating graph.");
         design.createPinDirectedGraph();

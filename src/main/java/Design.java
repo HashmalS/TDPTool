@@ -6,6 +6,7 @@ import org.jgrapht.graph.ListenableDirectedWeightedGraph;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created on 23.04.2016.
@@ -24,6 +25,7 @@ class Design {
     List<Component> components;
     ArrayList<GlobalPin> globalPins;
     ArrayList<Net> nets;
+    ArrayList<ArrayList<Component>> compRows;
 
     private HashSet<Pin> inputPins;
     private HashSet<Pin> outputPins;
@@ -36,6 +38,7 @@ class Design {
         components = new ArrayList<>();
         globalPins = new ArrayList<>();
         nets = new ArrayList<>();
+        compRows = new ArrayList<>();
         pinDirectedGraph = new ListenableDirectedWeightedGraph<>(DefaultWeightedEdge.class);
     }
 
@@ -159,11 +162,25 @@ class Design {
                 System.out.println(op.direction + " pin " + op.attachment + " " + op.pinName);
                 paths = adp.getAllPaths(ip, op, true, 1000);
                 for (GraphPath<Pin, DefaultWeightedEdge> path:
-                     paths) {
+                        paths) {
                     System.out.println(path);
                     System.out.println(path.getWeight() + "\n");
                 }
             }
+        }
+    }
+
+    void componentsToRows() {
+        ArrayList<Component> row;
+        for (Row r :
+                rows) {
+            row = new ArrayList<>();
+            row.addAll(components.stream().filter(c -> c.pointY == r.origY).collect(Collectors.toList()));
+            row.sort((o1, o2) -> {
+                if (o1.pointX == o2.pointX) return 0;
+                else return o1.pointX > o2.pointX ? 1 : -1;
+            });
+            compRows.add(row);
         }
     }
 

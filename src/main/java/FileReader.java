@@ -51,6 +51,13 @@ class FileReader {
                                 }
                             }
                         }
+                        if (splitStr.length > 1 && splitStr[1].equals("SIZE")) {
+                            for (Component comp: design.components) {
+                                if (comp.modelName.equals(model)) {
+                                    comp.width = Double.parseDouble(splitStr[2]);
+                                }
+                            }
+                        }
                     }
                 }
             }

@@ -10,6 +10,7 @@ class Component {
     private String type;
     int pointX;
     int pointY;
+    double width;
     private char orient;
     ArrayList<ComponentPin> pins = new ArrayList<>();
     List<Pin> inputPins;
