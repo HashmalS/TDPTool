@@ -4,6 +4,7 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.AllDirectedPaths;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.graph.ListenableDirectedWeightedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
@@ -37,7 +38,7 @@ class Design {
 
     private ListenableDirectedWeightedGraph<Pin, DefaultWeightedEdge> pinDirectedGraph;
     private DirectedAcyclicGraph<Pin, DefaultWeightedEdge> dag;
-    private TopologicalOrderIterator<Pin, DefaultWeightedEdge> iterator;
+    private TopologicalOrderIterator<Pin, DefaultWeightedEdge> iterator, reversedIterator;
 
     private static final Logger logger = LogManager.getLogger(Program.class.getName());
 
@@ -207,10 +208,17 @@ class Design {
 
     void topologicalSort() {
         iterator = new TopologicalOrderIterator<>(dag);
+        reversedIterator = new TopologicalOrderIterator<>(new EdgeReversedGraph<>(dag));
         while (iterator.hasNext()) {
             Pin p = iterator.next();
-            System.out.println(p.attachment + " " + p.pinName);
+            System.out.print(p.attachment + " " + p.pinName + " ");
         }
+        System.out.println();
+        while (reversedIterator.hasNext()) {
+            Pin p = reversedIterator.next();
+            System.out.print(p.attachment + " " + p.pinName + " ");
+        }
+        System.out.println();
     }
 
     void componentsToRows() {

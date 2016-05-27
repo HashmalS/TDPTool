@@ -1,27 +1,27 @@
-2016-05-27 23:09:08.827 [main] TRACE Program - Entering application.
-2016-05-27 23:09:08.907 [main] INFO  Program - Started parsing DEF file.
-2016-05-27 23:09:08.908 [main] INFO  Program - Found design.
-2016-05-27 23:09:08.947 [main] INFO  Program - Parsing rows.
-2016-05-27 23:09:08.949 [main] INFO  Program - Success.
-2016-05-27 23:09:08.949 [main] INFO  Program - Parsing components.
-2016-05-27 23:09:08.950 [main] INFO  Program - Success.
-2016-05-27 23:09:08.950 [main] INFO  Program - Started parsing LEF file
-2016-05-27 23:09:08.956 [main] INFO  Program - Time consumed on reading from LEF file: 0.006 s.
-2016-05-27 23:09:08.956 [main] INFO  Program - Finished parsing LEF file.
-2016-05-27 23:09:08.956 [main] INFO  Program - Parsing global pins.
-2016-05-27 23:09:08.957 [main] INFO  Program - Success.
-2016-05-27 23:09:08.957 [main] INFO  Program - Parsing nets.
-2016-05-27 23:09:08.958 [main] INFO  Program - Success.
-2016-05-27 23:09:08.959 [main] INFO  Program - Finished reading from DEF file.
-2016-05-27 23:09:08.959 [main] INFO  Program - Time consumed on reading from files: 0.009 s.
-2016-05-27 23:09:08.959 [main] TRACE Program - Started calculating wire length.
-2016-05-27 23:09:08.959 [main] TRACE Program - Finished calculating wire length.
-2016-05-27 23:09:08.960 [main] INFO  Program - Time consumed on calculating wire length: 0.0 s.
-2016-05-27 23:09:08.971 [main] TRACE Program - Creating graph.
-2016-05-27 23:09:08.984 [main] TRACE Program - Successfully created graph.
-2016-05-27 23:09:08.985 [main] TRACE Program - Making the graph acyclic.
-2016-05-27 23:09:08.988 [main] INFO  Program - Couldn't add the edge (u4 A2 : u4 ZN) (Cycle founded)
-2016-05-27 23:09:08.988 [main] TRACE Program - Success.
-2016-05-27 23:09:08.998 [main] TRACE Program - Started writing a file.
-2016-05-27 23:09:09.010 [main] TRACE Program - Finished writing.
-2016-05-27 23:09:09.011 [main] TRACE Program - Exiting application.
+2016-05-27 23:30:31.054 [main] TRACE Program - Entering application.
+2016-05-27 23:30:31.131 [main] INFO  Program - Started parsing DEF file.
+2016-05-27 23:30:31.131 [main] INFO  Program - Found design.
+2016-05-27 23:30:31.167 [main] INFO  Program - Parsing rows.
+2016-05-27 23:30:31.169 [main] INFO  Program - Success.
+2016-05-27 23:30:31.171 [main] INFO  Program - Parsing components.
+2016-05-27 23:30:31.172 [main] INFO  Program - Success.
+2016-05-27 23:30:31.172 [main] INFO  Program - Started parsing LEF file
+2016-05-27 23:30:31.178 [main] INFO  Program - Time consumed on reading from LEF file: 0.005 s.
+2016-05-27 23:30:31.179 [main] INFO  Program - Finished parsing LEF file.
+2016-05-27 23:30:31.179 [main] INFO  Program - Parsing global pins.
+2016-05-27 23:30:31.180 [main] INFO  Program - Success.
+2016-05-27 23:30:31.180 [main] INFO  Program - Parsing nets.
+2016-05-27 23:30:31.181 [main] INFO  Program - Success.
+2016-05-27 23:30:31.182 [main] INFO  Program - Finished reading from DEF file.
+2016-05-27 23:30:31.182 [main] INFO  Program - Time consumed on reading from files: 0.009 s.
+2016-05-27 23:30:31.183 [main] TRACE Program - Started calculating wire length.
+2016-05-27 23:30:31.183 [main] TRACE Program - Finished calculating wire length.
+2016-05-27 23:30:31.183 [main] INFO  Program - Time consumed on calculating wire length: 0.0 s.
+2016-05-27 23:30:31.194 [main] TRACE Program - Creating graph.
+2016-05-27 23:30:31.206 [main] TRACE Program - Successfully created graph.
+2016-05-27 23:30:31.206 [main] TRACE Program - Making the graph acyclic.
+2016-05-27 23:30:31.209 [main] INFO  Program - Couldn't add the edge (u4 A2 : u4 ZN) (Cycle founded)
+2016-05-27 23:30:31.209 [main] TRACE Program - Success.
+2016-05-27 23:30:31.217 [main] TRACE Program - Started writing a file.
+2016-05-27 23:30:31.233 [main] TRACE Program - Finished writing.
+2016-05-27 23:30:31.233 [main] TRACE Program - Exiting application.
