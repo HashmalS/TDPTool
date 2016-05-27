@@ -38,7 +38,11 @@ public class Program {
         design.createPinDirectedGraph();
         design.updateEdgeLengths();
         logger.trace("Successfully created graph.");
-        design.checkPaths();
+        //design.checkPaths();
+        logger.trace("Making the graph acyclic.");
+        design.createAcyclicGraph();
+        logger.trace("Success.");
+        design.topologicalSort();
 
         logger.trace("Started writing a file.");
         FileWriter writer = new FileWriter("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple");

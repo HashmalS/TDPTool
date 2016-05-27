@@ -1,11 +1,13 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.AllDirectedPaths;
+import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableDirectedWeightedGraph;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,12 +27,20 @@ class Design {
     List<Component> components;
     ArrayList<GlobalPin> globalPins;
     ArrayList<Net> nets;
-    ArrayList<ArrayList<Component>> compRows;
+
+    private ArrayList<DefaultWeightedEdge> arcs = new ArrayList<>();
+
+    private ArrayList<ArrayList<Component>> compRows;
 
     private HashSet<Pin> inputPins;
     private HashSet<Pin> outputPins;
 
     private ListenableDirectedWeightedGraph<Pin, DefaultWeightedEdge> pinDirectedGraph;
+    private DirectedAcyclicGraph<Pin, DefaultWeightedEdge> dag;
+    private TopologicalOrderIterator<Pin, DefaultWeightedEdge> iterator;
+
+    private static final Logger logger = LogManager.getLogger(Program.class.getName());
+
 
     Design(String name) {
         designName = name;
@@ -40,6 +50,7 @@ class Design {
         nets = new ArrayList<>();
         compRows = new ArrayList<>();
         pinDirectedGraph = new ListenableDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+        dag = new DirectedAcyclicGraph<>(DefaultWeightedEdge.class);
     }
 
     String getDesignName() {
@@ -107,6 +118,14 @@ class Design {
             comp.pins.forEach(pinGraph::addVertex);
         }
 
+        for (Net net :
+                nets) {
+            Pin p1 = net.connections.get(0);
+            net.connections.subList(1, net.connections.size()).stream()
+                    .filter(p -> pinGraph.containsVertex(p) && pinGraph.containsVertex(p1))
+                    .forEach(p -> pinGraph.addEdge(p1, p));
+        }
+
         for (Component comp :
                 components) {
             comp.createPinSets();
@@ -115,15 +134,9 @@ class Design {
                 for (Pin p1 :
                         comp.outputPins) {
                     pinGraph.addEdge(p, p1);
+                    arcs.add(pinGraph.getEdge(p, p1));
                 }
             }
-        }
-        for (Net net :
-                nets) {
-            Pin p1 = net.connections.get(0);
-            net.connections.subList(1, net.connections.size()).stream()
-                    .filter(p -> pinGraph.containsVertex(p) && pinGraph.containsVertex(p1))
-                    .forEach(p -> pinGraph.addEdge(p1, p));
         }
 
         pinDirectedGraph = pinGraph;
@@ -167,6 +180,36 @@ class Design {
                     System.out.println(path.getWeight() + "\n");
                 }
             }
+        }
+    }
+    
+    void createAcyclicGraph() {
+        for (Pin p :
+                pinDirectedGraph.vertexSet()) {
+            dag.addVertex(p);
+        }
+        for (DefaultWeightedEdge e :
+                pinDirectedGraph.edgeSet()) {
+            try {
+                dag.addEdge(pinDirectedGraph.getEdgeSource(e), pinDirectedGraph.getEdgeTarget(e));
+            }
+            catch (IllegalArgumentException ex) {
+                logger.info("Couldn't add the edge " + e +  " (Cycle founded)");
+            }
+        }
+        /*
+        System.out.println(pinDirectedGraph.vertexSet());
+        System.out.println(pinDirectedGraph.edgeSet());
+        System.out.println(dag.vertexSet());
+        System.out.println(dag.edgeSet());
+        */
+    }
+
+    void topologicalSort() {
+        iterator = new TopologicalOrderIterator<>(dag);
+        while (iterator.hasNext()) {
+            Pin p = iterator.next();
+            System.out.println(p.attachment + " " + p.pinName);
         }
     }
 
