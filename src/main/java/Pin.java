@@ -9,6 +9,10 @@ abstract class Pin {
     int pointY;
     String attachment;
 
+    double load;
+    double inDelay;
+    double outDelay;
+
     Pin() {}
 
     @Override

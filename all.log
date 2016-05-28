@@ -1,27 +1,30 @@
-2016-05-27 23:30:31.054 [main] TRACE Program - Entering application.
-2016-05-27 23:30:31.131 [main] INFO  Program - Started parsing DEF file.
-2016-05-27 23:30:31.131 [main] INFO  Program - Found design.
-2016-05-27 23:30:31.167 [main] INFO  Program - Parsing rows.
-2016-05-27 23:30:31.169 [main] INFO  Program - Success.
-2016-05-27 23:30:31.171 [main] INFO  Program - Parsing components.
-2016-05-27 23:30:31.172 [main] INFO  Program - Success.
-2016-05-27 23:30:31.172 [main] INFO  Program - Started parsing LEF file
-2016-05-27 23:30:31.178 [main] INFO  Program - Time consumed on reading from LEF file: 0.005 s.
-2016-05-27 23:30:31.179 [main] INFO  Program - Finished parsing LEF file.
-2016-05-27 23:30:31.179 [main] INFO  Program - Parsing global pins.
-2016-05-27 23:30:31.180 [main] INFO  Program - Success.
-2016-05-27 23:30:31.180 [main] INFO  Program - Parsing nets.
-2016-05-27 23:30:31.181 [main] INFO  Program - Success.
-2016-05-27 23:30:31.182 [main] INFO  Program - Finished reading from DEF file.
-2016-05-27 23:30:31.182 [main] INFO  Program - Time consumed on reading from files: 0.009 s.
-2016-05-27 23:30:31.183 [main] TRACE Program - Started calculating wire length.
-2016-05-27 23:30:31.183 [main] TRACE Program - Finished calculating wire length.
-2016-05-27 23:30:31.183 [main] INFO  Program - Time consumed on calculating wire length: 0.0 s.
-2016-05-27 23:30:31.194 [main] TRACE Program - Creating graph.
-2016-05-27 23:30:31.206 [main] TRACE Program - Successfully created graph.
-2016-05-27 23:30:31.206 [main] TRACE Program - Making the graph acyclic.
-2016-05-27 23:30:31.209 [main] INFO  Program - Couldn't add the edge (u4 A2 : u4 ZN) (Cycle founded)
-2016-05-27 23:30:31.209 [main] TRACE Program - Success.
-2016-05-27 23:30:31.217 [main] TRACE Program - Started writing a file.
-2016-05-27 23:30:31.233 [main] TRACE Program - Finished writing.
-2016-05-27 23:30:31.233 [main] TRACE Program - Exiting application.
+2016-05-28 16:54:46.784 [main] TRACE Program - Entering application.
+2016-05-28 16:54:46.865 [main] INFO  Program - Started parsing DEF file.
+2016-05-28 16:54:46.866 [main] INFO  Program - Found design.
+2016-05-28 16:54:46.903 [main] INFO  Program - Parsing rows.
+2016-05-28 16:54:46.904 [main] INFO  Program - Success.
+2016-05-28 16:54:46.904 [main] INFO  Program - Parsing components.
+2016-05-28 16:54:46.905 [main] INFO  Program - Success.
+2016-05-28 16:54:46.906 [main] INFO  Program - Started parsing LEF file
+2016-05-28 16:54:46.911 [main] INFO  Program - Time consumed on reading from LEF file: 0.005 s.
+2016-05-28 16:54:46.911 [main] INFO  Program - Finished parsing LEF file.
+2016-05-28 16:54:46.912 [main] INFO  Program - Parsing global pins.
+2016-05-28 16:54:46.913 [main] INFO  Program - Success.
+2016-05-28 16:54:46.913 [main] INFO  Program - Parsing nets.
+2016-05-28 16:54:46.915 [main] INFO  Program - Success.
+2016-05-28 16:54:46.915 [main] INFO  Program - Finished reading from DEF file.
+2016-05-28 16:54:47.025 [main] INFO  Program - Started parsing SDC file
+2016-05-28 16:54:47.026 [main] INFO  Program - Time consumed on reading constraints: 0.001 s.
+2016-05-28 16:54:47.026 [main] INFO  Program - Finished parsing SDC file.
+2016-05-28 16:54:47.026 [main] INFO  Program - Time consumed on reading from files: 0.009 s.
+2016-05-28 16:54:47.027 [main] TRACE Program - Started calculating wire length.
+2016-05-28 16:54:47.027 [main] TRACE Program - Finished calculating wire length.
+2016-05-28 16:54:47.027 [main] INFO  Program - Time consumed on calculating wire length: 0.0 s.
+2016-05-28 16:54:47.041 [main] TRACE Program - Creating graph.
+2016-05-28 16:54:47.059 [main] TRACE Program - Successfully created graph.
+2016-05-28 16:54:47.059 [main] TRACE Program - Making the graph acyclic.
+2016-05-28 16:54:47.062 [main] INFO  Program - Couldn't add the edge (u4 A2 : u4 ZN) (Cycle founded)
+2016-05-28 16:54:47.062 [main] TRACE Program - Success.
+2016-05-28 16:54:47.076 [main] TRACE Program - Started writing a file.
+2016-05-28 16:54:47.106 [main] TRACE Program - Finished writing.
+2016-05-28 16:54:47.106 [main] TRACE Program - Exiting application.

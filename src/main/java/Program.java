@@ -17,7 +17,8 @@ public class Program {
         logger.trace("Entering application.");
 
         FileReader reader = new FileReader("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple\\simple.def",
-                "C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple\\techlib.lef");
+                "C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple\\techlib.lef",
+                "C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple\\simple.sdc");
         try {
             design = reader.readDesign();
         } catch (IOException ex) {

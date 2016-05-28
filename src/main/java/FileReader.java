@@ -11,63 +11,20 @@ import java.util.*;
 class FileReader {
     private String defName;
     private String lefName;
+    private String sdcName;
     private Design design;
     private Pin connectedPin = null;
 
-    private final String delims = "[\t( );+-]+";
+    private final String delims = "[\t(\\{ }\\]);+-]+";
     private long startTime, endTime;
     private Comparator<Component> componentComparator = (o1, o2) ->  o1.compName.compareTo(o2.compName);
 
     private static final Logger logger = LogManager.getLogger(Program.class.getName());
 
-    FileReader(String defFile, String lefFile) {
+    FileReader(String defFile, String lefFile, String sdcFile) {
         defName = defFile;
         lefName = lefFile;
-    }
-
-    private void readComponentPins() throws IOException {
-        File lefFile = new File(lefName);
-        FileInputStream lefInputStream = new FileInputStream(lefFile);
-
-        BufferedReader lefBufferedReader = new BufferedReader(new InputStreamReader(lefInputStream));
-
-        logger.info("Started parsing LEF file");
-
-        String line, model;
-        String[] splitStr;
-
-        startTime = System.currentTimeMillis();
-        while ((line = lefBufferedReader.readLine()) != null) {
-            if (line.length() > 0 && !(line.charAt(0) == '#')) {
-                if(line.startsWith("MACRO")) {
-                    splitStr = line.split(delims);
-                    model = splitStr[1];
-                    while (!(splitStr[0].equals("END") && splitStr[1].equals(model))) {
-                        splitStr = lefBufferedReader.readLine().split(delims);
-                        if (splitStr.length > 1 && splitStr[1].equals("PIN")) {
-                            for (Component comp: design.components) {
-                                if (comp.modelName.equals(model)) {
-                                    comp.pins.add(new ComponentPin(splitStr[2], splitStr[4], comp));
-                                }
-                            }
-                        }
-                        if (splitStr.length > 1 && splitStr[1].equals("SIZE")) {
-                            for (Component comp: design.components) {
-                                if (comp.modelName.equals(model)) {
-                                    comp.width = Double.parseDouble(splitStr[2]);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        endTime = System.currentTimeMillis();
-        double resultTime = ((double)endTime - (double)startTime) / 1000;
-        logger.info("Time consumed on reading from LEF file: " + resultTime + " s.");
-
-        logger.info("Finished parsing LEF file.");
+        sdcName = sdcFile;
     }
 
     Design readDesign() throws IOException {
@@ -185,11 +142,129 @@ class FileReader {
         endTime = System.currentTimeMillis();
         double resultTime = ((double) endTime - (double) startTime) / 1000;
         logger.info("Finished reading from DEF file.");
+
+        readConstraints();
+
         logger.info("Time consumed on reading from files: " + resultTime + " s.");
 
         System.out.println("Found design \"" + design.getDesignName() + "\"\n\nDesign info:");
         design.showDesignInfo();
         defBufferedReader.close();
         return design;
+    }
+
+    private void readComponentPins() throws IOException {
+        File lefFile = new File(lefName);
+        FileInputStream lefInputStream = new FileInputStream(lefFile);
+
+        BufferedReader lefBufferedReader = new BufferedReader(new InputStreamReader(lefInputStream));
+
+        logger.info("Started parsing LEF file");
+
+        String line, model;
+        String[] splitStr;
+
+        startTime = System.currentTimeMillis();
+        while ((line = lefBufferedReader.readLine()) != null) {
+            if (line.length() > 0 && !(line.charAt(0) == '#')) {
+                if(line.startsWith("MACRO")) {
+                    splitStr = line.split(delims);
+                    model = splitStr[1];
+                    while (!(splitStr[0].equals("END") && splitStr[1].equals(model))) {
+                        splitStr = lefBufferedReader.readLine().split(delims);
+                        if (splitStr.length > 1 && splitStr[1].equals("PIN")) {
+                            for (Component comp: design.components) {
+                                if (comp.modelName.equals(model)) {
+                                    comp.pins.add(new ComponentPin(splitStr[2], splitStr[4], comp));
+                                }
+                            }
+                        }
+                        if (splitStr.length > 1 && splitStr[1].equals("SIZE")) {
+                            for (Component comp: design.components) {
+                                if (comp.modelName.equals(model)) {
+                                    comp.width = Double.parseDouble(splitStr[2]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        endTime = System.currentTimeMillis();
+        double resultTime = ((double)endTime - (double)startTime) / 1000;
+        logger.info("Time consumed on reading from LEF file: " + resultTime + " s.");
+
+        logger.info("Finished parsing LEF file.");
+    }
+
+    private void readConstraints() throws IOException {
+        File sdcFile = new File(sdcName);
+        FileInputStream sdcInputStream = new FileInputStream(sdcFile);
+
+        BufferedReader sdcBufferedReader = new BufferedReader(new InputStreamReader(sdcInputStream));
+
+        String line;
+        String[] splitStr;
+
+        logger.info("Started parsing SDC file");
+
+        startTime = System.currentTimeMillis();
+
+        while ((line = sdcBufferedReader.readLine()) != null) {
+            if (Objects.equals(line, "# input delays")) {
+                line = sdcBufferedReader.readLine();
+                splitStr = line.split(delims);
+                while (Objects.equals(splitStr[0], "set_input_delay")) {
+                    for (Pin p :
+                            design.globalPins) {
+                        if (p.pinName.equals(splitStr[3])) {
+                            p.inDelay = Double.parseDouble(splitStr[1]);
+                        }
+                    }
+                    line = sdcBufferedReader.readLine();
+                    splitStr = line.split(delims);
+                }
+            }
+
+            if (Objects.equals(line, "# output delays")) {
+                line = sdcBufferedReader.readLine();
+                splitStr = line.split(delims);
+                while (Objects.equals(splitStr[0], "set_input_delay")) {
+                    for (Pin p :
+                            design.globalPins) {
+                        if (p.pinName.equals(splitStr[3])) {
+                            p.outDelay = Double.parseDouble(splitStr[1]);
+                        }
+                    }
+                    line = sdcBufferedReader.readLine();
+                    splitStr = line.split(delims);
+                }
+            }
+
+            if (Objects.equals(line, "# output loads")) {
+                line = sdcBufferedReader.readLine();
+                splitStr = line.split(delims);
+                while (Objects.equals(splitStr[0], "set_load")) {
+                    for (Pin p :
+                            design.globalPins) {
+                        if (p.pinName.equals(splitStr[4])) {
+                            p.load = Double.parseDouble(splitStr[2]);
+                        }
+                    }
+                    line = sdcBufferedReader.readLine();
+                    if (line != null) {
+                        splitStr = line.split(delims);
+                    }
+                    else break;
+                }
+            }
+        }
+
+        endTime = System.currentTimeMillis();
+        double resultTime = ((double)endTime - (double)startTime) / 1000;
+        logger.info("Time consumed on reading constraints: " + resultTime + " s.");
+
+        logger.info("Finished parsing SDC file.");
     }
 }
