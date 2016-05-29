@@ -36,13 +36,10 @@ public class Program {
         design.componentsToRows();
 
         logger.trace("Creating graph.");
-        design.createPinDirectedGraph();
+        design.createAcyclicGraph();
         design.updateEdgeLengths();
         logger.trace("Successfully created graph.");
         //design.checkPaths();
-        logger.trace("Making the graph acyclic.");
-        design.createAcyclicGraph();
-        logger.trace("Success.");
         design.topologicalSort();
 
         logger.trace("Started writing a file.");

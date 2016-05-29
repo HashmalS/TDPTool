@@ -36,7 +36,6 @@ class Design {
     private HashSet<Pin> inputPins;
     private HashSet<Pin> outputPins;
 
-    private ListenableDirectedWeightedGraph<Pin, DefaultWeightedEdge> pinDirectedGraph;
     private DirectedAcyclicGraph<Pin, DefaultWeightedEdge> dag;
     private TopologicalOrderIterator<Pin, DefaultWeightedEdge> iterator, reversedIterator;
 
@@ -50,7 +49,6 @@ class Design {
         globalPins = new ArrayList<>();
         nets = new ArrayList<>();
         compRows = new ArrayList<>();
-        pinDirectedGraph = new ListenableDirectedWeightedGraph<>(DefaultWeightedEdge.class);
         dag = new DirectedAcyclicGraph<>(DefaultWeightedEdge.class);
     }
 
@@ -110,63 +108,28 @@ class Design {
         }
     }
 
-    void createPinDirectedGraph() {
-        ListenableDirectedWeightedGraph<Pin, DefaultWeightedEdge> pinGraph =
-                new ListenableDirectedWeightedGraph<>(DefaultWeightedEdge.class);
-        globalPins.forEach(pinGraph::addVertex);
-        for (Component comp :
-                components) {
-            comp.pins.forEach(pinGraph::addVertex);
-        }
-
-        for (Net net :
-                nets) {
-            Pin p1 = net.connections.get(0);
-            net.connections.subList(1, net.connections.size()).stream()
-                    .filter(p -> pinGraph.containsVertex(p) && pinGraph.containsVertex(p1))
-                    .forEach(p -> pinGraph.addEdge(p1, p));
-        }
-
-        for (Component comp :
-                components) {
-            comp.createPinSets();
-            for (Pin p :
-                    comp.inputPins) {
-                for (Pin p1 :
-                        comp.outputPins) {
-                    pinGraph.addEdge(p, p1);
-                    arcs.add(pinGraph.getEdge(p, p1));
-                }
-            }
-        }
-
-        pinDirectedGraph = pinGraph;
-    }
-
     void updateEdgeLengths() {
         for (Component comp :
                 components) {
             comp.createPinSets();
             for (Pin p :
                     comp.inputPins) {
-                for (Pin p1 :
-                        comp.outputPins) {
-                    pinDirectedGraph.setEdgeWeight(pinDirectedGraph.getEdge(p, p1), 1);
-                }
+                comp.outputPins.stream().filter(p1 -> dag.containsEdge(p, p1))
+                        .forEach(p1 -> dag.setEdgeWeight(dag.getEdge(p, p1), 1));
             }
         }
         for (Net net :
                 nets) {
             Pin p1 = net.connections.get(0);
             net.connections.subList(1, net.connections.size()).stream()
-                    .filter(p -> pinDirectedGraph.containsVertex(p) && pinDirectedGraph.containsVertex(p1))
-                    .forEach(p -> pinDirectedGraph.setEdgeWeight(pinDirectedGraph.getEdge(p1, p), net.length));
+                    .filter(p -> dag.containsVertex(p) && dag.containsVertex(p1))
+                    .forEach(p -> dag.setEdgeWeight(dag.getEdge(p1, p), net.length));
         }
     }
 
     void checkPaths() {
         setPins();
-        AllDirectedPaths<Pin, DefaultWeightedEdge> adp = new AllDirectedPaths<>(pinDirectedGraph);
+        AllDirectedPaths<Pin, DefaultWeightedEdge> adp = new AllDirectedPaths<>(dag);
         List<GraphPath<Pin, DefaultWeightedEdge>> paths;
         for (Pin ip :
                 inputPins) {
@@ -183,27 +146,39 @@ class Design {
             }
         }
     }
-    
+
     void createAcyclicGraph() {
-        for (Pin p :
-                pinDirectedGraph.vertexSet()) {
-            dag.addVertex(p);
+        globalPins.forEach(dag::addVertex);
+        for (Component comp :
+                components) {
+            comp.pins.forEach(dag::addVertex);
         }
-        for (DefaultWeightedEdge e :
-                pinDirectedGraph.edgeSet()) {
-            try {
-                dag.addEdge(pinDirectedGraph.getEdgeSource(e), pinDirectedGraph.getEdgeTarget(e));
-            }
-            catch (IllegalArgumentException ex) {
-                logger.info("Couldn't add the edge " + e +  " (Cycle founded)");
+
+        for (Net net :
+                nets) {
+            Pin p1 = net.connections.get(0);
+            net.connections.subList(1, net.connections.size()).stream()
+                    .filter(p -> dag.containsVertex(p) && dag.containsVertex(p1))
+                    .forEach(p -> dag.addEdge(p1, p));
+        }
+        for (Component comp :
+                components) {
+            comp.createPinSets();
+            for (Pin p :
+                    comp.inputPins) {
+                for (Pin p1 :
+                        comp.outputPins) {
+                    try {
+                        dag.addEdge(p, p1);
+                        arcs.add(dag.getEdge(p, p1));
+                    }
+                    catch (IllegalArgumentException ex) {
+                        logger.info("Couldn't add edge {" + p.attachment + " " + p.pinName
+                                + " : " + p1.attachment + " " + p1.pinName + "}");
+                    }
+                }
             }
         }
-        /*
-        System.out.println(pinDirectedGraph.vertexSet());
-        System.out.println(pinDirectedGraph.edgeSet());
-        System.out.println(dag.vertexSet());
-        System.out.println(dag.edgeSet());
-        */
     }
 
     void topologicalSort() {
@@ -219,6 +194,25 @@ class Design {
             System.out.print(p.attachment + " " + p.pinName + " ");
         }
         System.out.println();
+    }
+
+    void performSAT() {
+        while (iterator.hasNext()) {
+            Pin p = iterator.next();
+            p.arrivalTime = 0;
+            for (DefaultWeightedEdge e :
+                    dag.incomingEdgesOf(p)) {
+                // calculations
+            }
+        }
+        while (reversedIterator.hasNext()) {
+            Pin p = reversedIterator.next();
+            p.requiredTime = 0;
+            for (DefaultWeightedEdge e :
+                    dag.incomingEdgesOf(p)) {
+                // calculations
+            }
+        }
     }
 
     void componentsToRows() {

@@ -13,6 +13,10 @@ abstract class Pin {
     double inDelay;
     double outDelay;
 
+    double arrivalTime;
+    double requiredTime;
+    double slack;
+
     Pin() {}
 
     @Override
