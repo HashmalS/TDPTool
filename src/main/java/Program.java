@@ -37,10 +37,10 @@ public class Program {
 
         logger.trace("Creating graph.");
         design.createAcyclicGraph();
-        design.updateEdgeLengths();
         logger.trace("Successfully created graph.");
         //design.checkPaths();
         design.topologicalSort();
+        //design.showLength();
 
         logger.trace("Started writing a file.");
         FileWriter writer = new FileWriter("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple");

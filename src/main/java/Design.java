@@ -5,7 +5,6 @@ import org.jgrapht.alg.AllDirectedPaths;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
-import org.jgrapht.graph.ListenableDirectedWeightedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import java.util.*;
@@ -36,8 +35,8 @@ class Design {
     private HashSet<Pin> inputPins;
     private HashSet<Pin> outputPins;
 
-    private DirectedAcyclicGraph<Pin, DefaultWeightedEdge> dag;
-    private TopologicalOrderIterator<Pin, DefaultWeightedEdge> iterator, reversedIterator;
+    private DirectedAcyclicGraph<Pin, Net> dag;
+    private TopologicalOrderIterator<Pin, Net> iterator, reversedIterator;
 
     private static final Logger logger = LogManager.getLogger(Program.class.getName());
 
@@ -49,7 +48,7 @@ class Design {
         globalPins = new ArrayList<>();
         nets = new ArrayList<>();
         compRows = new ArrayList<>();
-        dag = new DirectedAcyclicGraph<>(DefaultWeightedEdge.class);
+        dag = new DirectedAcyclicGraph<>(Net.class);
     }
 
     String getDesignName() {
@@ -108,7 +107,13 @@ class Design {
         }
     }
 
-    void updateEdgeLengths() {
+    void showLength() {
+        for (Net n: dag.edgeSet()) {
+            System.out.println("Edge " + n.netName + ": " + n.length);
+        }
+    }
+
+    /*void updateEdgeLengths() {
         for (Component comp :
                 components) {
             comp.createPinSets();
@@ -125,12 +130,12 @@ class Design {
                     .filter(p -> dag.containsVertex(p) && dag.containsVertex(p1))
                     .forEach(p -> dag.setEdgeWeight(dag.getEdge(p1, p), net.length));
         }
-    }
+    }*/
 
     void checkPaths() {
         setPins();
-        AllDirectedPaths<Pin, DefaultWeightedEdge> adp = new AllDirectedPaths<>(dag);
-        List<GraphPath<Pin, DefaultWeightedEdge>> paths;
+        AllDirectedPaths<Pin, Net> adp = new AllDirectedPaths<>(dag);
+        List<GraphPath<Pin, Net>> paths;
         for (Pin ip :
                 inputPins) {
             System.out.println(ip.direction + " pin " + ip.attachment + " " + ip.pinName);
@@ -138,7 +143,7 @@ class Design {
                     outputPins) {
                 System.out.println(op.direction + " pin " + op.attachment + " " + op.pinName);
                 paths = adp.getAllPaths(ip, op, true, 1000);
-                for (GraphPath<Pin, DefaultWeightedEdge> path:
+                for (GraphPath<Pin, Net> path:
                         paths) {
                     System.out.println(path);
                     System.out.println(path.getWeight() + "\n");
@@ -159,7 +164,7 @@ class Design {
             Pin p1 = net.connections.get(0);
             net.connections.subList(1, net.connections.size()).stream()
                     .filter(p -> dag.containsVertex(p) && dag.containsVertex(p1))
-                    .forEach(p -> dag.addEdge(p1, p));
+                    .forEach(p -> dag.addEdge(p1, p, net));
         }
         for (Component comp :
                 components) {
@@ -169,7 +174,8 @@ class Design {
                 for (Pin p1 :
                         comp.outputPins) {
                     try {
-                        dag.addEdge(p, p1);
+                        Net n = new Net(p + " : " + p1);
+                        dag.addEdge(p, p1, n);
                         arcs.add(dag.getEdge(p, p1));
                     }
                     catch (IllegalArgumentException ex) {

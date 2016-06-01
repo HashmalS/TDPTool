@@ -1,21 +1,26 @@
+import org.jgrapht.graph.DefaultWeightedEdge;
+
 import java.util.ArrayList;
 
 /**
  * Created on 22.04.2016.
  * @author Sergey Soroka
  */
-class Net {
-    private String netName;
+class Net extends DefaultWeightedEdge {
+    String netName;
     ArrayList<Pin> connections;
     int length;
+
+    Net(String name) {
+        this.netName = name;
+    }
 
     Net(String name, ArrayList<Pin> cons) {
         netName = name;
         connections = cons;
     }
 
-    @Override
-    public String toString() {
+    String fileWritingString() {
         String cons = "";
         for (Pin pin :
                 connections) {
@@ -23,5 +28,26 @@ class Net {
                     " ) ";
         }
         return "   - " + netName + cons + " ; \n";
+    }
+
+    @Override
+    public int hashCode() {
+        return netName.hashCode();
+    }
+
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Net)) {
+            return false;
+        }
+
+        Net edge = (Net) obj;
+        return netName.equals(edge.netName);
     }
 }

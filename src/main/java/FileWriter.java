@@ -46,7 +46,7 @@ class FileWriter {
             writer.write("NETS " + design.nets.size() + " ; \n");
             for (Net net :
                     design.nets) {
-                writer.write(net.toString());
+                writer.write(net.fileWritingString());
                 writer.flush();
             }
             writer.write("END NETS \n\n");
