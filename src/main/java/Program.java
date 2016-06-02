@@ -40,7 +40,7 @@ public class Program {
         logger.trace("Successfully created graph.");
         //design.checkPaths();
         design.topologicalSort();
-        //design.showLength();
+        design.showLengths();
 
         logger.trace("Started writing a file.");
         FileWriter writer = new FileWriter("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple");

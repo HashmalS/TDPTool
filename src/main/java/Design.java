@@ -10,6 +10,8 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.abs;
+
 /**
  * Created on 23.04.2016.
  * @author HashmalS
@@ -28,15 +30,13 @@ class Design {
     ArrayList<GlobalPin> globalPins;
     ArrayList<Net> nets;
 
-    private ArrayList<DefaultWeightedEdge> arcs = new ArrayList<>();
-
     private ArrayList<ArrayList<Component>> compRows;
 
     private HashSet<Pin> inputPins;
     private HashSet<Pin> outputPins;
 
-    private DirectedAcyclicGraph<Pin, Net> dag;
-    private TopologicalOrderIterator<Pin, Net> iterator, reversedIterator;
+    private DirectedAcyclicGraph<Pin, NetEdge> dag;
+    private TopologicalOrderIterator<Pin, NetEdge> iterator, reversedIterator;
 
     private static final Logger logger = LogManager.getLogger(Program.class.getName());
 
@@ -48,7 +48,7 @@ class Design {
         globalPins = new ArrayList<>();
         nets = new ArrayList<>();
         compRows = new ArrayList<>();
-        dag = new DirectedAcyclicGraph<>(Net.class);
+        dag = new DirectedAcyclicGraph<>(NetEdge.class);
     }
 
     String getDesignName() {
@@ -107,35 +107,10 @@ class Design {
         }
     }
 
-    void showLength() {
-        for (Net n: dag.edgeSet()) {
-            System.out.println("Edge " + n.netName + ": " + n.length);
-        }
-    }
-
-    /*void updateEdgeLengths() {
-        for (Component comp :
-                components) {
-            comp.createPinSets();
-            for (Pin p :
-                    comp.inputPins) {
-                comp.outputPins.stream().filter(p1 -> dag.containsEdge(p, p1))
-                        .forEach(p1 -> dag.setEdgeWeight(dag.getEdge(p, p1), 1));
-            }
-        }
-        for (Net net :
-                nets) {
-            Pin p1 = net.connections.get(0);
-            net.connections.subList(1, net.connections.size()).stream()
-                    .filter(p -> dag.containsVertex(p) && dag.containsVertex(p1))
-                    .forEach(p -> dag.setEdgeWeight(dag.getEdge(p1, p), net.length));
-        }
-    }*/
-
     void checkPaths() {
         setPins();
-        AllDirectedPaths<Pin, Net> adp = new AllDirectedPaths<>(dag);
-        List<GraphPath<Pin, Net>> paths;
+        AllDirectedPaths<Pin, NetEdge> adp = new AllDirectedPaths<>(dag);
+        List<GraphPath<Pin, NetEdge>> paths;
         for (Pin ip :
                 inputPins) {
             System.out.println(ip.direction + " pin " + ip.attachment + " " + ip.pinName);
@@ -143,7 +118,7 @@ class Design {
                     outputPins) {
                 System.out.println(op.direction + " pin " + op.attachment + " " + op.pinName);
                 paths = adp.getAllPaths(ip, op, true, 1000);
-                for (GraphPath<Pin, Net> path:
+                for (GraphPath<Pin, NetEdge> path:
                         paths) {
                     System.out.println(path);
                     System.out.println(path.getWeight() + "\n");
@@ -164,7 +139,11 @@ class Design {
             Pin p1 = net.connections.get(0);
             net.connections.subList(1, net.connections.size()).stream()
                     .filter(p -> dag.containsVertex(p) && dag.containsVertex(p1))
-                    .forEach(p -> dag.addEdge(p1, p, net));
+                    .forEach(p -> {
+                        NetEdge n = new NetEdge(p1 + " : " + p);
+                        n.setLength(abs(p1.pointX - p.pointX + p1.pointY - p.pointY));
+                        dag.addEdge(p1, p, n);
+                    });
         }
         for (Component comp :
                 components) {
@@ -174,9 +153,9 @@ class Design {
                 for (Pin p1 :
                         comp.outputPins) {
                     try {
-                        Net n = new Net(p + " : " + p1);
+                        NetEdge n = new NetEdge(p + " : " + p1);
+                        n.setLength(1.0);
                         dag.addEdge(p, p1, n);
-                        arcs.add(dag.getEdge(p, p1));
                     }
                     catch (IllegalArgumentException ex) {
                         logger.info("Couldn't add edge {" + p.attachment + " " + p.pinName
@@ -200,6 +179,13 @@ class Design {
             System.out.print(p.attachment + " " + p.pinName + " ");
         }
         System.out.println();
+    }
+
+    void showLengths() {
+        for (NetEdge edge :
+                dag.edgeSet()) {
+            System.out.println(edge.getName() + ": " + edge.getLength());
+        }
     }
 
     void performSAT() {

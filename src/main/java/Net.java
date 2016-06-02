@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created on 22.04.2016.
  * @author Sergey Soroka
  */
-class Net extends DefaultWeightedEdge {
+class Net {
     String netName;
     ArrayList<Pin> connections;
     int length;
@@ -28,26 +28,5 @@ class Net extends DefaultWeightedEdge {
                     " ) ";
         }
         return "   - " + netName + cons + " ; \n";
-    }
-
-    @Override
-    public int hashCode() {
-        return netName.hashCode();
-    }
-
-    public boolean equals(Object obj)
-    {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof Net)) {
-            return false;
-        }
-
-        Net edge = (Net) obj;
-        return netName.equals(edge.netName);
     }
 }
