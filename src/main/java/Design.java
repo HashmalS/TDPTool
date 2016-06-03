@@ -3,14 +3,11 @@ import org.apache.logging.log4j.Logger;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.AllDirectedPaths;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
-import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.lang.Math.abs;
 
 /**
  * Created on 23.04.2016.
@@ -36,7 +33,7 @@ class Design {
     private HashSet<Pin> outputPins;
 
     private DirectedAcyclicGraph<Pin, NetEdge> dag;
-    private TopologicalOrderIterator<Pin, NetEdge> iterator, reversedIterator;
+    private TopologicalOrderIterator<Pin, NetEdge> iterator, reverseIterator;
 
     private static final Logger logger = LogManager.getLogger(Program.class.getName());
 
@@ -141,7 +138,7 @@ class Design {
                     .filter(p -> dag.containsVertex(p) && dag.containsVertex(p1))
                     .forEach(p -> {
                         NetEdge n = new NetEdge(p1 + " : " + p);
-                        n.setLength(abs(p1.pointX - p.pointX + p1.pointY - p.pointY));
+                        n.setLength(Math.abs(p1.pointX - p.pointX + p1.pointY - p.pointY));
                         dag.addEdge(p1, p, n);
                     });
         }
@@ -155,9 +152,10 @@ class Design {
                     try {
                         NetEdge n = new NetEdge(p + " : " + p1);
                         n.setLength(1.0);
-                        dag.addEdge(p, p1, n);
+                        dag.addDagEdge(p, p1, n);
+                        //dag.addEdge(p, p1, n);
                     }
-                    catch (IllegalArgumentException ex) {
+                    catch (DirectedAcyclicGraph.CycleFoundException ex) {
                         logger.info("Couldn't add edge {" + p.attachment + " " + p.pinName
                                 + " : " + p1.attachment + " " + p1.pinName + "}");
                     }
@@ -166,19 +164,21 @@ class Design {
         }
     }
 
-    void topologicalSort() {
+    private void topologicalSort() {
         iterator = new TopologicalOrderIterator<>(dag);
-        reversedIterator = new TopologicalOrderIterator<>(new EdgeReversedGraph<>(dag));
+        reverseIterator = new TopologicalOrderIterator<>(new EdgeReversedGraph<>(dag));
+        /*
         while (iterator.hasNext()) {
             Pin p = iterator.next();
             System.out.print(p.attachment + " " + p.pinName + " ");
         }
         System.out.println();
-        while (reversedIterator.hasNext()) {
-            Pin p = reversedIterator.next();
+        while (reverseIterator.hasNext()) {
+            Pin p = reverseIterator.next();
             System.out.print(p.attachment + " " + p.pinName + " ");
         }
         System.out.println();
+        */
     }
 
     void showLengths() {
@@ -189,22 +189,55 @@ class Design {
     }
 
     void performSAT() {
+        setPins();
+        logger.trace("Initializing arrival time.");
+        for (Pin p :
+                dag.vertexSet()) {
+            p.arrivalTime = dag.incomingEdgesOf(p).isEmpty() ? 0 + p.inDelay : - Double.MIN_VALUE;
+            System.out.println(p + ": " + p.arrivalTime);
+        }
+        logger.info("Finished initializing AT.");
+        logger.trace("Performing topological sort.");
+        //topologicalSort();
+        iterator = new TopologicalOrderIterator<>(dag);
+        reverseIterator = new TopologicalOrderIterator<>(new EdgeReversedGraph<>(dag));
+        logger.info("Finished topological sort.");
+        logger.trace("Calculating AT.");
         while (iterator.hasNext()) {
             Pin p = iterator.next();
-            p.arrivalTime = 0;
-            for (DefaultWeightedEdge e :
+            for (NetEdge e :
                     dag.incomingEdgesOf(p)) {
-                // calculations
+                p.arrivalTime = Math.max(p.arrivalTime, dag.getEdgeSource(e).arrivalTime);
             }
+            System.out.println(p + ": " + p.arrivalTime);
         }
-        while (reversedIterator.hasNext()) {
-            Pin p = reversedIterator.next();
-            p.requiredTime = 0;
-            for (DefaultWeightedEdge e :
-                    dag.incomingEdgesOf(p)) {
-                // calculations
+        logger.info("Finished calculating AT");
+
+        logger.trace("Initializing required time.");
+        for (Pin p :
+                dag.vertexSet()) {
+            p.requiredTime = dag.outgoingEdgesOf(p).isEmpty() ? 0 : Double.MAX_VALUE;
+            System.out.println(p + ": " + p.requiredTime);
+        }
+        logger.info("Finished initializing RAT.");
+        logger.trace("Calculating RAT.");
+        while (reverseIterator.hasNext()) {
+            Pin p = reverseIterator.next();
+            for (NetEdge e :
+                    dag.outgoingEdgesOf(p)) {
+                p.requiredTime = Math.min(p.requiredTime, dag.getEdgeTarget(e).requiredTime);
             }
+            System.out.println(p + ": " + p.requiredTime);
         }
+        logger.info("Finished calculating RAT.");
+
+        logger.trace("Calculating slack.");
+        for (Pin p :
+                dag.vertexSet()) {
+            p.slack = p.requiredTime - p.arrivalTime;
+            System.out.println(p + ": " + p.slack);
+        }
+        logger.info("Finished calculating slack.");
     }
 
     void componentsToRows() {

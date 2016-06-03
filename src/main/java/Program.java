@@ -39,8 +39,8 @@ public class Program {
         design.createAcyclicGraph();
         logger.trace("Successfully created graph.");
         //design.checkPaths();
-        design.topologicalSort();
-        design.showLengths();
+        //design.showLengths();
+        design.performSAT();
 
         logger.trace("Started writing a file.");
         FileWriter writer = new FileWriter("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple");

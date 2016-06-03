@@ -13,7 +13,7 @@ class NetEdge extends DefaultWeightedEdge{
         this.name = name;
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
@@ -21,11 +21,11 @@ class NetEdge extends DefaultWeightedEdge{
         this.name = name;
     }
 
-    public double getLength() {
+    double getLength() {
         return length;
     }
 
-    public void setLength(double length) {
+    void setLength(double length) {
         this.length = length;
     }
 
