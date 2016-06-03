@@ -240,6 +240,17 @@ class Design {
         logger.info("Finished calculating slack.");
     }
 
+    void netWeighting() {
+        logger.trace("Started net weighting.");
+        for (NetEdge n :
+                dag.edgeSet()) {
+            n.setSlack(dag.getEdgeTarget(n).slack - dag.getEdgeSource(n).slack);
+            n.setWeight(n.getSlack() < 0 ? 2 : 1);
+            System.out.println(n + ": " + n.getWeight());
+        }
+        logger.info("Finished net weighting.");
+    }
+
     void componentsToRows() {
         ArrayList<Component> row;
         for (Row r :

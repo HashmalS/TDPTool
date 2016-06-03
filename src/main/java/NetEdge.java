@@ -8,6 +8,7 @@ class NetEdge extends DefaultWeightedEdge{
     private String name;
     private double length;
     private double slack;
+    private double weight;
 
     NetEdge(String name) {
         this.name = name;
@@ -29,12 +30,21 @@ class NetEdge extends DefaultWeightedEdge{
         this.length = length;
     }
 
-    public double getSlack() {
+    double getSlack() {
         return slack;
     }
 
-    public void setSlack(double slack) {
+    void setSlack(double slack) {
         this.slack = slack;
+    }
+
+    @Override
+    public double getWeight() {
+        return weight;
+    }
+
+    void setWeight(double weight) {
+        this.weight = weight;
     }
 
     @Override
