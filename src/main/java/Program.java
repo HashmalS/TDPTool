@@ -40,8 +40,10 @@ public class Program {
         logger.trace("Successfully created graph.");
         //design.checkPaths();
         //design.showLengths();
-        design.performSAT();
-        design.netWeighting();
+        //design.performSAT();
+        //design.netWeighting();
+        design.statisticalSTA();
+        design.place();
 
         logger.trace("Started writing a file.");
         FileWriter writer = new FileWriter("C:\\Users\\HashmalS\\Documents\\Diploma\\benchmarks\\simple");

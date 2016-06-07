@@ -6,6 +6,8 @@ import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,8 @@ class Design {
 
     private HashSet<Pin> inputPins;
     private HashSet<Pin> outputPins;
+
+    private HashSet<NetEdge> arcs;
 
     private DirectedAcyclicGraph<Pin, NetEdge> dag;
     private TopologicalOrderIterator<Pin, NetEdge> iterator, reverseIterator;
@@ -125,6 +129,8 @@ class Design {
     }
 
     void createAcyclicGraph() {
+        arcs = new HashSet<>();
+
         globalPins.forEach(dag::addVertex);
         for (Component comp :
                 components) {
@@ -153,6 +159,7 @@ class Design {
                         NetEdge n = new NetEdge(p + " : " + p1);
                         n.setLength(1.0);
                         dag.addDagEdge(p, p1, n);
+                        arcs.add(n);
                         //dag.addEdge(p, p1, n);
                     }
                     catch (DirectedAcyclicGraph.CycleFoundException ex) {
@@ -188,13 +195,14 @@ class Design {
         }
     }
 
-    void performSAT() {
+    private void performSAT() {
+        Random r = new Random();
         setPins();
         logger.trace("Initializing arrival time.");
         for (Pin p :
                 dag.vertexSet()) {
             p.arrivalTime = dag.incomingEdgesOf(p).isEmpty() ? 0 + p.inDelay : - Double.MIN_VALUE;
-            System.out.println(p + ": " + p.arrivalTime);
+            //System.out.println(p + ": " + p.arrivalTime);
         }
         logger.info("Finished initializing AT.");
         logger.trace("Performing topological sort.");
@@ -202,22 +210,23 @@ class Design {
         iterator = new TopologicalOrderIterator<>(dag);
         reverseIterator = new TopologicalOrderIterator<>(new EdgeReversedGraph<>(dag));
         logger.info("Finished topological sort.");
+        generateDelays();
         logger.trace("Calculating AT.");
         while (iterator.hasNext()) {
             Pin p = iterator.next();
             for (NetEdge e :
                     dag.incomingEdgesOf(p)) {
-                p.arrivalTime = Math.max(p.arrivalTime, dag.getEdgeSource(e).arrivalTime);
+                p.arrivalTime = Math.max(p.arrivalTime, dag.getEdgeSource(e).arrivalTime + e.getDelay());
             }
-            System.out.println(p + ": " + p.arrivalTime);
+            //System.out.println(p + ": " + p.arrivalTime);
         }
         logger.info("Finished calculating AT");
 
         logger.trace("Initializing required time.");
         for (Pin p :
                 dag.vertexSet()) {
-            p.requiredTime = dag.outgoingEdgesOf(p).isEmpty() ? 0 : Double.MAX_VALUE;
-            System.out.println(p + ": " + p.requiredTime);
+            p.requiredTime = outputPins.contains(p) ? p.arrivalTime * (1 - ((double)r.nextInt(10) / 100)) : Double.MAX_VALUE;
+            //System.out.println(p + ": " + p.requiredTime);
         }
         logger.info("Finished initializing RAT.");
         logger.trace("Calculating RAT.");
@@ -225,9 +234,9 @@ class Design {
             Pin p = reverseIterator.next();
             for (NetEdge e :
                     dag.outgoingEdgesOf(p)) {
-                p.requiredTime = Math.min(p.requiredTime, dag.getEdgeTarget(e).requiredTime);
+                p.requiredTime = Math.min(p.requiredTime, dag.getEdgeTarget(e).requiredTime - e.getDelay());
             }
-            System.out.println(p + ": " + p.requiredTime);
+            //System.out.println(p + ": " + p.requiredTime);
         }
         logger.info("Finished calculating RAT.");
 
@@ -235,20 +244,85 @@ class Design {
         for (Pin p :
                 dag.vertexSet()) {
             p.slack = p.requiredTime - p.arrivalTime;
-            System.out.println(p + ": " + p.slack);
+            //System.out.println(p + ": " + p.slack);
         }
         logger.info("Finished calculating slack.");
     }
 
-    void netWeighting() {
+    private void generateDelays() {
+        for (NetEdge e :
+                dag.edgeSet()) {
+            e.setDelay(arcs.contains(e) ? gateDelay() : netDelay(e));
+        }
+    }
+
+    private double gateDelay() {
+        Random r = new Random();
+        return r.nextGaussian() * 1e-12 + 10e-12;
+    }
+
+    private double netDelay(NetEdge e) {
+        Random r = new Random();
+        return Math.abs(0.69 * (e.getLength() * dbuPerMicron * 1e-9) * (r.nextGaussian() * 1e-7 + 2e-7));
+    }
+
+    private void netWeighting() {
         logger.trace("Started net weighting.");
         for (NetEdge n :
                 dag.edgeSet()) {
             n.setSlack(dag.getEdgeTarget(n).slack - dag.getEdgeSource(n).slack);
-            n.setWeight(n.getSlack() < 0 ? 2 : 1);
-            System.out.println(n + ": " + n.getWeight());
+            n.setWeight(n.getSlack() < 0 ? n.getWeight() * 2.0 : n.getWeight());
+            //if (!arcs.contains(n) && n.getSlack() < 0)
+                //System.out.println(n + " (" + n.getSlack() + "): " + n.getWeight());
         }
         logger.info("Finished net weighting.");
+    }
+
+    void statisticalSTA() {
+        for (int i = 0; i < 100; i++) {
+            performSAT();
+            netWeighting();
+        }
+        dag.edgeSet().stream().filter(n -> !arcs.contains(n)).forEach(n -> System.out.println(n + ": " + n.getWeight()));
+    }
+
+    private void calculateCBB(ComponentPin pin) {
+        int left = length, right = 0, up = width, down = 0;
+        Component comp = pin.component;
+        for (Pin p :
+                comp.pins) {
+            if (p.direction.equals("OUTPUT")) {
+                for (NetEdge n :
+                        dag.outgoingEdgesOf(p)) {
+                    if (dag.getEdgeSource(n).pointX < left) left = dag.getEdgeSource(n).pointX;
+                    if (dag.getEdgeSource(n).pointX > right) right = dag.getEdgeSource(n).pointX;
+                    if (dag.getEdgeSource(n).pointY > down) down = dag.getEdgeSource(n).pointY;
+                    if (dag.getEdgeSource(n).pointY < up) up = dag.getEdgeSource(n).pointY;
+                }
+            }
+            else for (NetEdge n :
+                    dag.incomingEdgesOf(p)) {
+                if (dag.getEdgeSource(n).pointX < left) left = dag.getEdgeSource(n).pointX;
+                if (dag.getEdgeSource(n).pointX > right) right = dag.getEdgeSource(n).pointX;
+                if (dag.getEdgeSource(n).pointY > down) down = dag.getEdgeSource(n).pointY;
+                if (dag.getEdgeSource(n).pointY < up) up = dag.getEdgeSource(n).pointY;
+            }
+        }
+        System.out.println("CBB for " + comp + ": r=" + right + ", l=" + left + ", u=" + up + ", d=" + down);
+    }
+
+    void place() {
+        ComponentPin p;
+        for (NetEdge n :
+                dag.edgeSet()) {
+            if (dag.getEdgeTarget(n).getClass().equals(ComponentPin.class) && n.getWeight() >= 2) {
+                p = (ComponentPin)dag.getEdgeTarget(n);
+                if (!p.component.type.equals("FIXED")) {
+                    calculateCBB(p);
+                }
+                else System.out.println("Component is fixed.");
+            }
+        }
     }
 
     void componentsToRows() {

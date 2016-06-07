@@ -30,7 +30,7 @@ class FileWriter {
             writer.write("\nCOMPONENTS " + design.components.size() + " ;\n");
             for (Component comp :
                     design.components) {
-                writer.write(comp.toString());
+                writer.write(comp.fileWritingString());
                 writer.flush();
             }
             writer.write("END COMPONENTS\n\n");

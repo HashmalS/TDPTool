@@ -3,7 +3,7 @@
  * @author Sergey Soroka
  */
 class ComponentPin extends Pin {
-    private Component component;
+    Component component;
 
     ComponentPin() {}
 

@@ -1,5 +1,7 @@
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import java.util.Random;
+
 /**
  * Created by HashmalS on 02.06.2016.
  * @author Sergey Soroka
@@ -9,9 +11,11 @@ class NetEdge extends DefaultWeightedEdge{
     private double length;
     private double slack;
     private double weight;
+    private double delay;
 
     NetEdge(String name) {
         this.name = name;
+        setWeight(1.0);
     }
 
     String getName() {
@@ -45,6 +49,14 @@ class NetEdge extends DefaultWeightedEdge{
 
     void setWeight(double weight) {
         this.weight = weight;
+    }
+
+    double getDelay() {
+        return delay;
+    }
+
+    void setDelay(double delay) {
+        this.delay = delay;
     }
 
     @Override

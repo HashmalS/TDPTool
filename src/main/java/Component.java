@@ -7,7 +7,7 @@ import java.util.*;
 class Component {
     String compName;
     String modelName;
-    private String type;
+    String type;
     int pointX;
     int pointY;
     double width;
@@ -48,6 +48,10 @@ class Component {
 
     @Override
     public String toString() {
+        return compName;
+    }
+
+    String fileWritingString() {
         return String.format("   - %s %s\n      + %s ( %d %d ) %s ;\n",
                 compName, modelName, type, pointX, pointY, orient);
     }
