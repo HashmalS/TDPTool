@@ -271,7 +271,7 @@ class Design {
         for (NetEdge n :
                 dag.edgeSet()) {
             n.setSlack(dag.getEdgeTarget(n).slack - dag.getEdgeSource(n).slack);
-            n.setWeight(n.getSlack() < 0 ? n.getWeight() * 2.0 : n.getWeight());
+            n.setWeight(n.getSlack() < 0 ? n.getWeight() + 1.0 : n.getWeight());
             //if (!arcs.contains(n) && n.getSlack() < 0)
                 //System.out.println(n + " (" + n.getSlack() + "): " + n.getWeight());
         }
@@ -294,10 +294,10 @@ class Design {
             if (p.direction.equals("OUTPUT")) {
                 for (NetEdge n :
                         dag.outgoingEdgesOf(p)) {
-                    if (dag.getEdgeSource(n).pointX < left) left = dag.getEdgeSource(n).pointX;
-                    if (dag.getEdgeSource(n).pointX > right) right = dag.getEdgeSource(n).pointX;
-                    if (dag.getEdgeSource(n).pointY > down) down = dag.getEdgeSource(n).pointY;
-                    if (dag.getEdgeSource(n).pointY < up) up = dag.getEdgeSource(n).pointY;
+                    if (dag.getEdgeTarget(n).pointX < left) left = dag.getEdgeTarget(n).pointX;
+                    if (dag.getEdgeTarget(n).pointX > right) right = dag.getEdgeTarget(n).pointX;
+                    if (dag.getEdgeTarget(n).pointY > down) down = dag.getEdgeTarget(n).pointY;
+                    if (dag.getEdgeTarget(n).pointY < up) up = dag.getEdgeTarget(n).pointY;
                 }
             }
             else for (NetEdge n :
@@ -308,7 +308,7 @@ class Design {
                 if (dag.getEdgeSource(n).pointY < up) up = dag.getEdgeSource(n).pointY;
             }
         }
-        System.out.println("CBB for " + comp + ": r=" + right + ", l=" + left + ", u=" + up + ", d=" + down);
+        System.out.println("CBB for " + comp + ": l=" + left + ", r=" + right + ", u=" + up + ", d=" + down);
     }
 
     void place() {
@@ -320,7 +320,7 @@ class Design {
                 if (!p.component.type.equals("FIXED")) {
                     calculateCBB(p);
                 }
-                else System.out.println("Component is fixed.");
+                else System.out.println("Component " + p.component + " is fixed.");
             }
         }
     }
