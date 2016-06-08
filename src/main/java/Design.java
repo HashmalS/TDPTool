@@ -6,8 +6,6 @@ import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +21,10 @@ class Design {
 
     private int length;
     private int width;
+
+    private int rowHeight;
+
+    private double TNS;
 
     ArrayList<Row> rows;
     List<Component> components;
@@ -163,8 +165,8 @@ class Design {
                         //dag.addEdge(p, p1, n);
                     }
                     catch (DirectedAcyclicGraph.CycleFoundException ex) {
-                        logger.info("Couldn't add edge {" + p.attachment + " " + p.pinName
-                                + " : " + p1.attachment + " " + p1.pinName + "}");
+                        //logger.info("Couldn't add edge {" + p.attachment + " " + p.pinName
+                        //        + " : " + p1.attachment + " " + p1.pinName + "}");
                     }
                 }
             }
@@ -249,10 +251,37 @@ class Design {
         logger.info("Finished calculating slack.");
     }
 
+    private double calculateTNS() {
+        double res = 0;
+        for (NetEdge e :
+                dag.edgeSet()) {
+            if (e.getSlack() < 0) {
+                res += e.getSlack();
+            }
+        }
+        return res;
+    }
+
     private void generateDelays() {
         for (NetEdge e :
                 dag.edgeSet()) {
             e.setDelay(arcs.contains(e) ? gateDelay() : netDelay(e));
+        }
+    }
+
+    private void generateDelays(Component comp) {
+        for (Pin p :
+                comp.pins) {
+            if (p.direction.equals("OUTPUT")) {
+                for (NetEdge e :
+                        dag.outgoingEdgesOf(p)) {
+                    e.setDelay(netDelay(e));
+                }
+            }
+            else for (NetEdge e :
+                    dag.incomingEdgesOf(p)) {
+                e.setDelay(netDelay(e));
+            }
         }
     }
 
@@ -286,8 +315,8 @@ class Design {
         dag.edgeSet().stream().filter(n -> !arcs.contains(n)).forEach(n -> System.out.println(n + ": " + n.getWeight()));
     }
 
-    private void calculateCBB(ComponentPin pin) {
-        int left = length, right = 0, up = width, down = 0;
+    private void generateMove(ComponentPin pin) {
+        int left = length, right = 0, top = width, bottom = 0;
         Component comp = pin.component;
         for (Pin p :
                 comp.pins) {
@@ -296,31 +325,65 @@ class Design {
                         dag.outgoingEdgesOf(p)) {
                     if (dag.getEdgeTarget(n).pointX < left) left = dag.getEdgeTarget(n).pointX;
                     if (dag.getEdgeTarget(n).pointX > right) right = dag.getEdgeTarget(n).pointX;
-                    if (dag.getEdgeTarget(n).pointY > down) down = dag.getEdgeTarget(n).pointY;
-                    if (dag.getEdgeTarget(n).pointY < up) up = dag.getEdgeTarget(n).pointY;
+                    if (dag.getEdgeTarget(n).pointY > bottom) bottom = dag.getEdgeTarget(n).pointY;
+                    if (dag.getEdgeTarget(n).pointY < top) top = dag.getEdgeTarget(n).pointY;
                 }
             }
             else for (NetEdge n :
                     dag.incomingEdgesOf(p)) {
                 if (dag.getEdgeSource(n).pointX < left) left = dag.getEdgeSource(n).pointX;
                 if (dag.getEdgeSource(n).pointX > right) right = dag.getEdgeSource(n).pointX;
-                if (dag.getEdgeSource(n).pointY > down) down = dag.getEdgeSource(n).pointY;
-                if (dag.getEdgeSource(n).pointY < up) up = dag.getEdgeSource(n).pointY;
+                if (dag.getEdgeSource(n).pointY > bottom) bottom = dag.getEdgeSource(n).pointY;
+                if (dag.getEdgeSource(n).pointY < top) top = dag.getEdgeSource(n).pointY;
             }
         }
-        System.out.println("CBB for " + comp + ": l=" + left + ", r=" + right + ", u=" + up + ", d=" + down);
+        System.out.println("CBB for " + comp + ": l=" + left + ", r=" + right + ", u=" + top + ", d=" + bottom);
+        rowHeight = rows.get(2).origY - rows.get(1).origY;
+        System.out.println("Row height: " + rowHeight);
+
+        long posX = Math.round(((0.5 * (left + right)) / comp.width) * comp.width);
+        long posY = Math.round(((0.5 * (top + bottom)) / comp.width) * comp.width);
+        posY = legalizeRow((int)posY);
+        System.out.println("New position: " + posX + ", " + posY);
+
+        int currentX = comp.pointX;
+        int currentY = comp.pointY;
+        place(comp, (int)posX, (int)posY);
+        if (calculateTNS() < TNS) {
+            place(comp, currentX, currentY);
+        }
+        else
+            TNS = calculateTNS();
+
+        logger.info("TNS on this step: " + calculateTNS());
+
+        //System.out.println("Previous TNS: " + TNS + "\nCurrent TNS: " + calculateTNS());
+    }
+
+    private int legalizeRow(int y) {
+        if (y % rowHeight == 0) return y;
+        else return (int)(rowHeight * Math.round(y / (double)rowHeight));
+    }
+
+    private void place(Component c, int x, int y) {
+        c.moveTo(x, y);
+        c.pins.forEach(ComponentPin::updatePoints);
+        calculateWireLength();
+        statisticalSTA();
     }
 
     void place() {
+        TNS = calculateTNS();
         ComponentPin p;
-        for (NetEdge n :
+        HashSet<Component> moved = new HashSet<>();
+        for (NetEdge e :
                 dag.edgeSet()) {
-            if (dag.getEdgeTarget(n).getClass().equals(ComponentPin.class) && n.getWeight() >= 2) {
-                p = (ComponentPin)dag.getEdgeTarget(n);
-                if (!p.component.type.equals("FIXED")) {
-                    calculateCBB(p);
+            if (dag.getEdgeTarget(e).getClass().equals(ComponentPin.class)) {
+                p = (ComponentPin)dag.getEdgeTarget(e);
+                if (!p.component.type.equals("FIXED") & ! moved.contains(p.component)) {
+                    generateMove(p);
+                    moved.add(p.component);
                 }
-                else System.out.println("Component " + p.component + " is fixed.");
             }
         }
     }
@@ -337,6 +400,10 @@ class Design {
             });
             compRows.add(row);
         }
+    }
+
+    void showTNS() {
+        System.out.println("TNS: " + calculateTNS());
     }
 
     private void setPins() {

@@ -15,4 +15,9 @@ class ComponentPin extends Pin {
         this.component = component;
         attachment = component.compName;
     }
+
+    void updatePoints() {
+        pointX = component.pointX;
+        pointY = component.pointY;
+    }
 }
